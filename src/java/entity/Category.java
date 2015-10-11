@@ -32,64 +32,64 @@ import javax.xml.bind.annotation.XmlTransient;
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "Category.findAll", query = "SELECT c FROM Category c"),
-    @NamedQuery(name = "Category.findByCId", query = "SELECT c FROM Category c WHERE c.cId = :cId"),
-    @NamedQuery(name = "Category.findByCName", query = "SELECT c FROM Category c WHERE c.cName = :cName")})
+    @NamedQuery(name = "Category.findById", query = "SELECT c FROM Category c WHERE c.id = :id"),
+    @NamedQuery(name = "Category.findByName", query = "SELECT c FROM Category c WHERE c.name = :name")})
 public class Category implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     @Column(name = "c_id")
-    private Integer cId;
+    private Integer id;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 50)
     @Column(name = "c_name")
-    private String cName;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "categoryId")
-    private Collection<Entry> entryCollection;
+    private String name;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "category")
+    private Collection<Entry> entries;
 
     public Category() {
     }
 
-    public Category(Integer cId) {
-        this.cId = cId;
+    public Category(Integer id) {
+        this.id = id;
     }
 
-    public Category(Integer cId, String cName) {
-        this.cId = cId;
-        this.cName = cName;
+    public Category(Integer id, String name) {
+        this.id = id;
+        this.name = name;
     }
 
-    public Integer getCId() {
-        return cId;
+    public Integer getId() {
+        return id;
     }
 
-    public void setCId(Integer cId) {
-        this.cId = cId;
+    public void setId(Integer id) {
+        this.id = id;
     }
 
-    public String getCName() {
-        return cName;
+    public String getName() {
+        return name;
     }
 
-    public void setCName(String cName) {
-        this.cName = cName;
+    public void setName(String name) {
+        this.name = name;
     }
 
     @XmlTransient
-    public Collection<Entry> getEntryCollection() {
-        return entryCollection;
+    public Collection<Entry> getEntries() {
+        return entries;
     }
 
-    public void setEntryCollection(Collection<Entry> entryCollection) {
-        this.entryCollection = entryCollection;
+    public void setEntries(Collection<Entry> entries) {
+        this.entries = entries;
     }
 
     @Override
     public int hashCode() {
         int hash = 0;
-        hash += (cId != null ? cId.hashCode() : 0);
+        hash += (id != null ? id.hashCode() : 0);
         return hash;
     }
 
@@ -100,7 +100,7 @@ public class Category implements Serializable {
             return false;
         }
         Category other = (Category) object;
-        if ((this.cId == null && other.cId != null) || (this.cId != null && !this.cId.equals(other.cId))) {
+        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
             return false;
         }
         return true;
@@ -108,7 +108,7 @@ public class Category implements Serializable {
 
     @Override
     public String toString() {
-        return "entity.Category[ cId=" + cId + " ]";
+        return "entity.Category[ id=" + id + " ]";
     }
     
 }

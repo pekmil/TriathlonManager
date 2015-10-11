@@ -24,7 +24,7 @@ import javax.ws.rs.Produces;
  * @author pekmil
  */
 @Stateless
-@Path("entity.race")
+@Path("race")
 public class RaceFacadeREST extends AbstractFacade<Race> {
     @PersistenceContext(unitName = "TriathlonManagerPU")
     private EntityManager em;
@@ -35,14 +35,14 @@ public class RaceFacadeREST extends AbstractFacade<Race> {
 
     @POST
     @Override
-    @Consumes({"application/xml", "application/json"})
+    @Consumes({"application/json"})
     public void create(Race entity) {
         super.create(entity);
     }
 
     @PUT
     @Path("{id}")
-    @Consumes({"application/xml", "application/json"})
+    @Consumes({"application/json"})
     public void edit(@PathParam("id") Integer id, Race entity) {
         super.edit(entity);
     }
@@ -55,21 +55,21 @@ public class RaceFacadeREST extends AbstractFacade<Race> {
 
     @GET
     @Path("{id}")
-    @Produces({"application/xml", "application/json"})
+    @Produces({"application/json"})
     public Race find(@PathParam("id") Integer id) {
         return super.find(id);
     }
 
     @GET
     @Override
-    @Produces({"application/xml", "application/json"})
+    @Produces({"application/json"})
     public List<Race> findAll() {
         return super.findAll();
     }
 
     @GET
     @Path("{from}/{to}")
-    @Produces({"application/xml", "application/json"})
+    @Produces({"application/json"})
     public List<Race> findRange(@PathParam("from") Integer from, @PathParam("to") Integer to) {
         return super.findRange(new int[]{from, to});
     }

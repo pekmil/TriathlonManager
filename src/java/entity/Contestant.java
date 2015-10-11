@@ -37,117 +37,117 @@ import javax.xml.bind.annotation.XmlTransient;
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "Contestant.findAll", query = "SELECT c FROM Contestant c"),
-    @NamedQuery(name = "Contestant.findByCId", query = "SELECT c FROM Contestant c WHERE c.cId = :cId"),
-    @NamedQuery(name = "Contestant.findByCName", query = "SELECT c FROM Contestant c WHERE c.cName = :cName"),
-    @NamedQuery(name = "Contestant.findByCBirthdate", query = "SELECT c FROM Contestant c WHERE c.cBirthdate = :cBirthdate"),
-    @NamedQuery(name = "Contestant.findByCGender", query = "SELECT c FROM Contestant c WHERE c.cGender = :cGender"),
-    @NamedQuery(name = "Contestant.findByCFromtown", query = "SELECT c FROM Contestant c WHERE c.cFromtown = :cFromtown")})
+    @NamedQuery(name = "Contestant.findById", query = "SELECT c FROM Contestant c WHERE c.id = :id"),
+    @NamedQuery(name = "Contestant.findByName", query = "SELECT c FROM Contestant c WHERE c.name = :name"),
+    @NamedQuery(name = "Contestant.findByBirthdate", query = "SELECT c FROM Contestant c WHERE c.birthdate = :birthdate"),
+    @NamedQuery(name = "Contestant.findByGender", query = "SELECT c FROM Contestant c WHERE c.gender = :gender"),
+    @NamedQuery(name = "Contestant.findByFromtown", query = "SELECT c FROM Contestant c WHERE c.fromtown = :fromtown")})
 public class Contestant implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     @Column(name = "c_id")
-    private Integer cId;
+    private Integer id;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 100)
     @Column(name = "c_name")
-    private String cName;
+    private String name;
     @Basic(optional = false)
     @NotNull
     @Column(name = "c_birthdate")
     @Temporal(TemporalType.DATE)
-    private Date cBirthdate;
+    private Date birthdate;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 6)
     @Column(name = "c_gender")
-    private String cGender;
+    private String gender;
     @Size(max = 100)
     @Column(name = "c_fromtown")
-    private String cFromtown;
+    private String fromtown;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "contestant")
-    private Collection<Entry> entryCollection;
+    private Collection<Entry> entries;
     @JoinColumn(name = "club_id", referencedColumnName = "c_id")
     @ManyToOne
-    private Club clubId;
+    private Club club;
 
     public Contestant() {
     }
 
-    public Contestant(Integer cId) {
-        this.cId = cId;
+    public Contestant(Integer id) {
+        this.id = id;
     }
 
-    public Contestant(Integer cId, String cName, Date cBirthdate, String cGender) {
-        this.cId = cId;
-        this.cName = cName;
-        this.cBirthdate = cBirthdate;
-        this.cGender = cGender;
+    public Contestant(Integer id, String name, Date birthdate, String gender) {
+        this.id = id;
+        this.name = name;
+        this.birthdate = birthdate;
+        this.gender = gender;
     }
 
-    public Integer getCId() {
-        return cId;
+    public Integer getId() {
+        return id;
     }
 
-    public void setCId(Integer cId) {
-        this.cId = cId;
+    public void setId(Integer id) {
+        this.id = id;
     }
 
-    public String getCName() {
-        return cName;
+    public String getName() {
+        return name;
     }
 
-    public void setCName(String cName) {
-        this.cName = cName;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public Date getCBirthdate() {
-        return cBirthdate;
+    public Date getBirthdate() {
+        return birthdate;
     }
 
-    public void setCBirthdate(Date cBirthdate) {
-        this.cBirthdate = cBirthdate;
+    public void setBirthdate(Date birthdate) {
+        this.birthdate = birthdate;
     }
 
-    public String getCGender() {
-        return cGender;
+    public String getGender() {
+        return gender;
     }
 
-    public void setCGender(String cGender) {
-        this.cGender = cGender;
+    public void setGender(String gender) {
+        this.gender = gender;
     }
 
-    public String getCFromtown() {
-        return cFromtown;
+    public String getFromtown() {
+        return fromtown;
     }
 
-    public void setCFromtown(String cFromtown) {
-        this.cFromtown = cFromtown;
+    public void setFromtown(String fromtown) {
+        this.fromtown = fromtown;
     }
 
     @XmlTransient
-    public Collection<Entry> getEntryCollection() {
-        return entryCollection;
+    public Collection<Entry> getEntries() {
+        return entries;
     }
 
-    public void setEntryCollection(Collection<Entry> entryCollection) {
-        this.entryCollection = entryCollection;
+    public void setEntries(Collection<Entry> entries) {
+        this.entries = entries;
     }
 
-    public Club getClubId() {
-        return clubId;
+    public Club getClub() {
+        return club;
     }
 
-    public void setClubId(Club clubId) {
-        this.clubId = clubId;
+    public void setClub(Club club) {
+        this.club = club;
     }
 
     @Override
     public int hashCode() {
         int hash = 0;
-        hash += (cId != null ? cId.hashCode() : 0);
+        hash += (id != null ? id.hashCode() : 0);
         return hash;
     }
 
@@ -158,7 +158,7 @@ public class Contestant implements Serializable {
             return false;
         }
         Contestant other = (Contestant) object;
-        if ((this.cId == null && other.cId != null) || (this.cId != null && !this.cId.equals(other.cId))) {
+        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
             return false;
         }
         return true;
@@ -166,7 +166,7 @@ public class Contestant implements Serializable {
 
     @Override
     public String toString() {
-        return "entity.Contestant[ cId=" + cId + " ]";
+        return "entity.Contestant[ id=" + id + " ]";
     }
     
 }

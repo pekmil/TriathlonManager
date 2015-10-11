@@ -37,117 +37,117 @@ import javax.xml.bind.annotation.XmlTransient;
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "Race.findAll", query = "SELECT r FROM Race r"),
-    @NamedQuery(name = "Race.findByRId", query = "SELECT r FROM Race r WHERE r.rId = :rId"),
-    @NamedQuery(name = "Race.findByRName", query = "SELECT r FROM Race r WHERE r.rName = :rName"),
-    @NamedQuery(name = "Race.findByRDesc", query = "SELECT r FROM Race r WHERE r.rDesc = :rDesc"),
-    @NamedQuery(name = "Race.findByRStartdate", query = "SELECT r FROM Race r WHERE r.rStartdate = :rStartdate"),
-    @NamedQuery(name = "Race.findByREnddate", query = "SELECT r FROM Race r WHERE r.rEnddate = :rEnddate")})
+    @NamedQuery(name = "Race.findById", query = "SELECT r FROM Race r WHERE r.id = :id"),
+    @NamedQuery(name = "Race.findByName", query = "SELECT r FROM Race r WHERE r.name = :name"),
+    @NamedQuery(name = "Race.findByDesc", query = "SELECT r FROM Race r WHERE r.desc = :desc"),
+    @NamedQuery(name = "Race.findByStartdate", query = "SELECT r FROM Race r WHERE r.startdate = :startdate"),
+    @NamedQuery(name = "Race.findByEnddate", query = "SELECT r FROM Race r WHERE r.enddate = :enddate")})
 public class Race implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     @Column(name = "r_id")
-    private Integer rId;
+    private Integer id;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 200)
     @Column(name = "r_name")
-    private String rName;
+    private String name;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 1000)
     @Column(name = "r_desc")
-    private String rDesc;
+    private String desc;
     @Basic(optional = false)
     @NotNull
     @Column(name = "r_startdate")
     @Temporal(TemporalType.DATE)
-    private Date rStartdate;
+    private Date startdate;
     @Column(name = "r_enddate")
     @Temporal(TemporalType.DATE)
-    private Date rEnddate;
+    private Date enddate;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "race")
-    private Collection<Entry> entryCollection;
+    private Collection<Entry> entries;
     @JoinColumn(name = "tournament_id", referencedColumnName = "t_id")
     @ManyToOne
-    private Tournament tournamentId;
+    private Tournament tournament;
 
     public Race() {
     }
 
-    public Race(Integer rId) {
-        this.rId = rId;
+    public Race(Integer id) {
+        this.id = id;
     }
 
-    public Race(Integer rId, String rName, String rDesc, Date rStartdate) {
-        this.rId = rId;
-        this.rName = rName;
-        this.rDesc = rDesc;
-        this.rStartdate = rStartdate;
+    public Race(Integer id, String name, String desc, Date startdate) {
+        this.id = id;
+        this.name = name;
+        this.desc = desc;
+        this.startdate = startdate;
     }
 
-    public Integer getRId() {
-        return rId;
+    public Integer getId() {
+        return id;
     }
 
-    public void setRId(Integer rId) {
-        this.rId = rId;
+    public void setId(Integer id) {
+        this.id = id;
     }
 
-    public String getRName() {
-        return rName;
+    public String getName() {
+        return name;
     }
 
-    public void setRName(String rName) {
-        this.rName = rName;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public String getRDesc() {
-        return rDesc;
+    public String getDesc() {
+        return desc;
     }
 
-    public void setRDesc(String rDesc) {
-        this.rDesc = rDesc;
+    public void setDesc(String desc) {
+        this.desc = desc;
     }
 
-    public Date getRStartdate() {
-        return rStartdate;
+    public Date getStartdate() {
+        return startdate;
     }
 
-    public void setRStartdate(Date rStartdate) {
-        this.rStartdate = rStartdate;
+    public void setStartdate(Date startdate) {
+        this.startdate = startdate;
     }
 
-    public Date getREnddate() {
-        return rEnddate;
+    public Date getEnddate() {
+        return enddate;
     }
 
-    public void setREnddate(Date rEnddate) {
-        this.rEnddate = rEnddate;
+    public void setEnddate(Date enddate) {
+        this.enddate = enddate;
     }
 
     @XmlTransient
     public Collection<Entry> getEntryCollection() {
-        return entryCollection;
+        return entries;
     }
 
-    public void setEntryCollection(Collection<Entry> entryCollection) {
-        this.entryCollection = entryCollection;
+    public void setEntries(Collection<Entry> entries) {
+        this.entries = entries;
+    }
+    
+    public Tournament getTournament() {
+        return tournament;
     }
 
-    public Tournament getTournamentId() {
-        return tournamentId;
-    }
-
-    public void setTournamentId(Tournament trournamentId) {
-        this.tournamentId = trournamentId;
+    public void setTournament(Tournament trournament) {
+        this.tournament = trournament;
     }
 
     @Override
     public int hashCode() {
         int hash = 0;
-        hash += (rId != null ? rId.hashCode() : 0);
+        hash += (id != null ? id.hashCode() : 0);
         return hash;
     }
 
@@ -158,7 +158,7 @@ public class Race implements Serializable {
             return false;
         }
         Race other = (Race) object;
-        if ((this.rId == null && other.rId != null) || (this.rId != null && !this.rId.equals(other.rId))) {
+        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
             return false;
         }
         return true;
@@ -166,7 +166,7 @@ public class Race implements Serializable {
 
     @Override
     public String toString() {
-        return "entity.Race[ rId=" + rId + " ]";
+        return "entity.Race[ id=" + id + " ]";
     }
     
 }

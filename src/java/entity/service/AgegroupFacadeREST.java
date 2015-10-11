@@ -24,7 +24,7 @@ import javax.ws.rs.Produces;
  * @author pekmil
  */
 @Stateless
-@Path("entity.agegroup")
+@Path("agegroup")
 public class AgegroupFacadeREST extends AbstractFacade<Agegroup> {
     @PersistenceContext(unitName = "TriathlonManagerPU")
     private EntityManager em;
@@ -35,14 +35,14 @@ public class AgegroupFacadeREST extends AbstractFacade<Agegroup> {
 
     @POST
     @Override
-    @Consumes({"application/xml", "application/json"})
+    @Consumes({"application/json"})
     public void create(Agegroup entity) {
         super.create(entity);
     }
 
     @PUT
     @Path("{id}")
-    @Consumes({"application/xml", "application/json"})
+    @Consumes({"application/json"})
     public void edit(@PathParam("id") Integer id, Agegroup entity) {
         super.edit(entity);
     }
@@ -55,21 +55,21 @@ public class AgegroupFacadeREST extends AbstractFacade<Agegroup> {
 
     @GET
     @Path("{id}")
-    @Produces({"application/xml", "application/json"})
+    @Produces({"application/json"})
     public Agegroup find(@PathParam("id") Integer id) {
         return super.find(id);
     }
 
     @GET
     @Override
-    @Produces({"application/xml", "application/json"})
+    @Produces({"application/json"})
     public List<Agegroup> findAll() {
         return super.findAll();
     }
 
     @GET
     @Path("{from}/{to}")
-    @Produces({"application/xml", "application/json"})
+    @Produces({"application/json"})
     public List<Agegroup> findRange(@PathParam("from") Integer from, @PathParam("to") Integer to) {
         return super.findRange(new int[]{from, to});
     }

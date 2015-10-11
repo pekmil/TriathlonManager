@@ -31,79 +31,79 @@ import javax.xml.bind.annotation.XmlTransient;
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "Tournament.findAll", query = "SELECT t FROM Tournament t"),
-    @NamedQuery(name = "Tournament.findByTId", query = "SELECT t FROM Tournament t WHERE t.tId = :tId"),
-    @NamedQuery(name = "Tournament.findByTName", query = "SELECT t FROM Tournament t WHERE t.tName = :tName"),
-    @NamedQuery(name = "Tournament.findByTDesc", query = "SELECT t FROM Tournament t WHERE t.tDesc = :tDesc")})
+    @NamedQuery(name = "Tournament.findById", query = "SELECT t FROM Tournament t WHERE t.id = :id"),
+    @NamedQuery(name = "Tournament.findByName", query = "SELECT t FROM Tournament t WHERE t.name = :name"),
+    @NamedQuery(name = "Tournament.findByDesc", query = "SELECT t FROM Tournament t WHERE t.desc = :desc")})
 public class Tournament implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     @Column(name = "t_id")
-    private Integer tId;
+    private Integer id;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 200)
     @Column(name = "t_name")
-    private String tName;
+    private String name;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 1000)
     @Column(name = "t_desc")
-    private String tDesc;
-    @OneToMany(mappedBy = "tournamentId")
-    private Collection<Race> raceCollection;
+    private String desc;
+    @OneToMany(mappedBy = "tournament")
+    private Collection<Race> races;
 
     public Tournament() {
     }
 
-    public Tournament(Integer tId) {
-        this.tId = tId;
+    public Tournament(Integer id) {
+        this.id = id;
     }
 
-    public Tournament(Integer tId, String tName, String tDesc) {
-        this.tId = tId;
-        this.tName = tName;
-        this.tDesc = tDesc;
+    public Tournament(Integer id, String name, String desc) {
+        this.id = id;
+        this.name = name;
+        this.desc = desc;
     }
 
-    public Integer getTId() {
-        return tId;
+    public Integer getId() {
+        return id;
     }
 
-    public void setTId(Integer tId) {
-        this.tId = tId;
+    public void setId(Integer id) {
+        this.id = id;
     }
 
-    public String getTName() {
-        return tName;
+    public String getName() {
+        return name;
     }
 
-    public void setTName(String tName) {
-        this.tName = tName;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public String getTDesc() {
-        return tDesc;
+    public String getDesc() {
+        return desc;
     }
 
-    public void setTDesc(String tDesc) {
-        this.tDesc = tDesc;
+    public void setDesc(String desc) {
+        this.desc = desc;
     }
 
     @XmlTransient
-    public Collection<Race> getRaceCollection() {
-        return raceCollection;
+    public Collection<Race> getRaces() {
+        return races;
     }
 
-    public void setRaceCollection(Collection<Race> raceCollection) {
-        this.raceCollection = raceCollection;
+    public void setRaces(Collection<Race> races) {
+        this.races = races;
     }
 
     @Override
     public int hashCode() {
         int hash = 0;
-        hash += (tId != null ? tId.hashCode() : 0);
+        hash += (id != null ? id.hashCode() : 0);
         return hash;
     }
 
@@ -114,7 +114,7 @@ public class Tournament implements Serializable {
             return false;
         }
         Tournament other = (Tournament) object;
-        if ((this.tId == null && other.tId != null) || (this.tId != null && !this.tId.equals(other.tId))) {
+        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
             return false;
         }
         return true;
@@ -122,7 +122,7 @@ public class Tournament implements Serializable {
 
     @Override
     public String toString() {
-        return "entity.Tournament[ tId=" + tId + " ]";
+        return "entity.Tournament[ id=" + id + " ]";
     }
     
 }

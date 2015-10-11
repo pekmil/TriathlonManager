@@ -26,7 +26,7 @@ import javax.ws.rs.core.PathSegment;
  * @author pekmil
  */
 @Stateless
-@Path("entity.entry")
+@Path("entry")
 public class EntryFacadeREST extends AbstractFacade<Entry> {
     @PersistenceContext(unitName = "TriathlonManagerPU")
     private EntityManager em;
@@ -58,14 +58,14 @@ public class EntryFacadeREST extends AbstractFacade<Entry> {
 
     @POST
     @Override
-    @Consumes({"application/xml", "application/json"})
+    @Consumes({"application/json"})
     public void create(Entry entity) {
         super.create(entity);
     }
 
     @PUT
     @Path("{id}")
-    @Consumes({"application/xml", "application/json"})
+    @Consumes({"application/json"})
     public void edit(@PathParam("id") PathSegment id, Entry entity) {
         super.edit(entity);
     }
@@ -79,7 +79,7 @@ public class EntryFacadeREST extends AbstractFacade<Entry> {
 
     @GET
     @Path("{id}")
-    @Produces({"application/xml", "application/json"})
+    @Produces({"application/json"})
     public Entry find(@PathParam("id") PathSegment id) {
         entity.EntryPK key = getPrimaryKey(id);
         return super.find(key);
@@ -87,14 +87,14 @@ public class EntryFacadeREST extends AbstractFacade<Entry> {
 
     @GET
     @Override
-    @Produces({"application/xml", "application/json"})
+    @Produces({"application/json"})
     public List<Entry> findAll() {
         return super.findAll();
     }
 
     @GET
     @Path("{from}/{to}")
-    @Produces({"application/xml", "application/json"})
+    @Produces({"application/json"})
     public List<Entry> findRange(@PathParam("from") Integer from, @PathParam("to") Integer to) {
         return super.findRange(new int[]{from, to});
     }

@@ -31,37 +31,37 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "Entry.findAll", query = "SELECT e FROM Entry e"),
-    @NamedQuery(name = "Entry.findByRaceId", query = "SELECT e FROM Entry e WHERE e.entryPK.raceId = :raceId"),
-    @NamedQuery(name = "Entry.findByContestantId", query = "SELECT e FROM Entry e WHERE e.entryPK.contestantId = :contestantId"),
-    @NamedQuery(name = "Entry.findByEEntrytime", query = "SELECT e FROM Entry e WHERE e.eEntrytime = :eEntrytime"),
-    @NamedQuery(name = "Entry.findByERacenum", query = "SELECT e FROM Entry e WHERE e.eRacenum = :eRacenum"),
-    @NamedQuery(name = "Entry.findByERacetime", query = "SELECT e FROM Entry e WHERE e.eRacetime = :eRacetime"),
-    @NamedQuery(name = "Entry.findByEStatus", query = "SELECT e FROM Entry e WHERE e.eStatus = :eStatus"),
-    @NamedQuery(name = "Entry.findByELicencenum", query = "SELECT e FROM Entry e WHERE e.eLicencenum = :eLicencenum")})
+    @NamedQuery(name = "Entry.findByRaceId", query = "SELECT e FROM Entry e WHERE e.key.raceId = :raceId"),
+    @NamedQuery(name = "Entry.findByContestantId", query = "SELECT e FROM Entry e WHERE e.key.contestantId = :contestantId"),
+    @NamedQuery(name = "Entry.findByEntrytime", query = "SELECT e FROM Entry e WHERE e.entrytime = :entrytime"),
+    @NamedQuery(name = "Entry.findByRacenum", query = "SELECT e FROM Entry e WHERE e.racenum = :racenum"),
+    @NamedQuery(name = "Entry.findByRacetime", query = "SELECT e FROM Entry e WHERE e.racetime = :racetime"),
+    @NamedQuery(name = "Entry.findByStatus", query = "SELECT e FROM Entry e WHERE e.status = :status"),
+    @NamedQuery(name = "Entry.findByLicencenum", query = "SELECT e FROM Entry e WHERE e.licencenum = :licencenum")})
 public class Entry implements Serializable {
     private static final long serialVersionUID = 1L;
     @EmbeddedId
-    protected EntryPK entryPK;
+    protected EntryPK key;
     @Basic(optional = false)
     @NotNull
     @Column(name = "e_entrytime")
     @Temporal(TemporalType.TIMESTAMP)
-    private Date eEntrytime;
+    private Date entrytime;
     @Basic(optional = false)
     @NotNull
     @Column(name = "e_racenum")
-    private short eRacenum;
+    private short racenum;
     @Column(name = "e_racetime")
     @Temporal(TemporalType.TIME)
-    private Date eRacetime;
+    private Date racetime;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 10)
     @Column(name = "e_status")
-    private String eStatus;
+    private String status;
     @Size(max = 50)
     @Column(name = "e_licencenum")
-    private String eLicencenum;
+    private String licencenum;
     @JoinColumn(name = "race_id", referencedColumnName = "r_id", insertable = false, updatable = false)
     @ManyToOne(optional = false)
     private Race race;
@@ -70,75 +70,75 @@ public class Entry implements Serializable {
     private Contestant contestant;
     @JoinColumn(name = "category_id", referencedColumnName = "c_id")
     @ManyToOne(optional = false)
-    private Category categoryId;
+    private Category category;
     @JoinColumn(name = "agegroup_id", referencedColumnName = "a_id")
     @ManyToOne(optional = false)
-    private Agegroup agegroupId;
+    private Agegroup agegroup;
 
     public Entry() {
     }
 
-    public Entry(EntryPK entryPK) {
-        this.entryPK = entryPK;
+    public Entry(EntryPK key) {
+        this.key = key;
     }
 
-    public Entry(EntryPK entryPK, Date eEntrytime, short eRacenum, String eStatus) {
-        this.entryPK = entryPK;
-        this.eEntrytime = eEntrytime;
-        this.eRacenum = eRacenum;
-        this.eStatus = eStatus;
+    public Entry(EntryPK key, Date entrytime, short racenum, String status) {
+        this.key = key;
+        this.entrytime = entrytime;
+        this.racenum = racenum;
+        this.status = status;
     }
 
     public Entry(int raceId, int contestantId) {
-        this.entryPK = new EntryPK(raceId, contestantId);
+        this.key = new EntryPK(raceId, contestantId);
     }
 
-    public EntryPK getEntryPK() {
-        return entryPK;
+    public EntryPK getKey() {
+        return key;
     }
 
-    public void setEntryPK(EntryPK entryPK) {
-        this.entryPK = entryPK;
+    public void setKey(EntryPK key) {
+        this.key = key;
     }
 
-    public Date getEEntrytime() {
-        return eEntrytime;
+    public Date getEntrytime() {
+        return entrytime;
     }
 
-    public void setEEntrytime(Date eEntrytime) {
-        this.eEntrytime = eEntrytime;
+    public void setEntrytime(Date entrytime) {
+        this.entrytime = entrytime;
     }
 
-    public short getERacenum() {
-        return eRacenum;
+    public short getRacenum() {
+        return racenum;
     }
 
-    public void setERacenum(short eRacenum) {
-        this.eRacenum = eRacenum;
+    public void setRacenum(short racenum) {
+        this.racenum = racenum;
     }
 
-    public Date getERacetime() {
-        return eRacetime;
+    public Date getRacetime() {
+        return racetime;
     }
 
-    public void setERacetime(Date eRacetime) {
-        this.eRacetime = eRacetime;
+    public void setRacetime(Date racetime) {
+        this.racetime = racetime;
     }
 
-    public String getEStatus() {
-        return eStatus;
+    public String getStatus() {
+        return status;
     }
 
-    public void setEStatus(String eStatus) {
-        this.eStatus = eStatus;
+    public void setStatus(String status) {
+        this.status = status;
     }
 
-    public String getELicencenum() {
-        return eLicencenum;
+    public String getLicencenum() {
+        return licencenum;
     }
 
-    public void setELicencenum(String eLicencenum) {
-        this.eLicencenum = eLicencenum;
+    public void setLicencenum(String licencenum) {
+        this.licencenum = licencenum;
     }
 
     public Race getRace() {
@@ -157,26 +157,26 @@ public class Entry implements Serializable {
         this.contestant = contestant;
     }
 
-    public Category getCategoryId() {
-        return categoryId;
+    public Category getCategory() {
+        return category;
     }
 
-    public void setCategoryId(Category categoryId) {
-        this.categoryId = categoryId;
+    public void setCategory(Category category) {
+        this.category = category;
     }
 
-    public Agegroup getAgegroupId() {
-        return agegroupId;
+    public Agegroup getAgegroup() {
+        return agegroup;
     }
 
-    public void setAgegroupId(Agegroup agegroupId) {
-        this.agegroupId = agegroupId;
+    public void setAgegroup(Agegroup agegroup) {
+        this.agegroup = agegroup;
     }
 
     @Override
     public int hashCode() {
         int hash = 0;
-        hash += (entryPK != null ? entryPK.hashCode() : 0);
+        hash += (key != null ? key.hashCode() : 0);
         return hash;
     }
 
@@ -187,7 +187,7 @@ public class Entry implements Serializable {
             return false;
         }
         Entry other = (Entry) object;
-        if ((this.entryPK == null && other.entryPK != null) || (this.entryPK != null && !this.entryPK.equals(other.entryPK))) {
+        if ((this.key == null && other.key != null) || (this.key != null && !this.key.equals(other.key))) {
             return false;
         }
         return true;
@@ -195,7 +195,7 @@ public class Entry implements Serializable {
 
     @Override
     public String toString() {
-        return "entity.Entry[ entryPK=" + entryPK + " ]";
+        return "entity.Entry[ key=" + key + " ]";
     }
     
 }

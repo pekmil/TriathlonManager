@@ -35,79 +35,79 @@ import javax.xml.bind.annotation.XmlTransient;
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "Agegroup.findAll", query = "SELECT a FROM Agegroup a"),
-    @NamedQuery(name = "Agegroup.findByAId", query = "SELECT a FROM Agegroup a WHERE a.aId = :aId"),
-    @NamedQuery(name = "Agegroup.findByAStartyear", query = "SELECT a FROM Agegroup a WHERE a.aStartyear = :aStartyear"),
-    @NamedQuery(name = "Agegroup.findByAName", query = "SELECT a FROM Agegroup a WHERE a.aName = :aName")})
+    @NamedQuery(name = "Agegroup.findById", query = "SELECT a FROM Agegroup a WHERE a.id = :id"),
+    @NamedQuery(name = "Agegroup.findByStartyear", query = "SELECT a FROM Agegroup a WHERE a.startyear = :startyear"),
+    @NamedQuery(name = "Agegroup.findByName", query = "SELECT a FROM Agegroup a WHERE a.name = :name")})
 public class Agegroup implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     @Column(name = "a_id")
-    private Integer aId;
+    private Integer id;
     @Basic(optional = false)
     @NotNull
     @Column(name = "a_startyear")
     @Temporal(TemporalType.DATE)
-    private Date aStartyear;
+    private Date startyear;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 50)
     @Column(name = "a_name")
-    private String aName;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "agegroupId")
-    private Collection<Entry> entryCollection;
+    private String name;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "agegroup")
+    private Collection<Entry> entries;
 
     public Agegroup() {
     }
 
-    public Agegroup(Integer aId) {
-        this.aId = aId;
+    public Agegroup(Integer id) {
+        this.id = id;
     }
 
-    public Agegroup(Integer aId, Date aStartyear, String aName) {
-        this.aId = aId;
-        this.aStartyear = aStartyear;
-        this.aName = aName;
+    public Agegroup(Integer id, Date startyear, String name) {
+        this.id = id;
+        this.startyear = startyear;
+        this.name = name;
     }
 
-    public Integer getAId() {
-        return aId;
+    public Integer getId() {
+        return id;
     }
 
-    public void setAId(Integer aId) {
-        this.aId = aId;
+    public void setId(Integer id) {
+        this.id = id;
     }
 
-    public Date getAStartyear() {
-        return aStartyear;
+    public Date getStartyear() {
+        return startyear;
     }
 
-    public void setAStartyear(Date aStartyear) {
-        this.aStartyear = aStartyear;
+    public void setStartyear(Date startyear) {
+        this.startyear = startyear;
     }
 
-    public String getAName() {
-        return aName;
+    public String getName() {
+        return name;
     }
 
-    public void setAName(String aName) {
-        this.aName = aName;
+    public void setName(String name) {
+        this.name = name;
     }
 
     @XmlTransient
-    public Collection<Entry> getEntryCollection() {
-        return entryCollection;
+    public Collection<Entry> getEntries() {
+        return entries;
     }
 
-    public void setEntryCollection(Collection<Entry> entryCollection) {
-        this.entryCollection = entryCollection;
+    public void setEntries(Collection<Entry> entries) {
+        this.entries = entries;
     }
 
     @Override
     public int hashCode() {
         int hash = 0;
-        hash += (aId != null ? aId.hashCode() : 0);
+        hash += (id != null ? id.hashCode() : 0);
         return hash;
     }
 
@@ -118,7 +118,7 @@ public class Agegroup implements Serializable {
             return false;
         }
         Agegroup other = (Agegroup) object;
-        if ((this.aId == null && other.aId != null) || (this.aId != null && !this.aId.equals(other.aId))) {
+        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
             return false;
         }
         return true;
@@ -126,7 +126,7 @@ public class Agegroup implements Serializable {
 
     @Override
     public String toString() {
-        return "entity.Agegroup[ aId=" + aId + " ]";
+        return "entity.Agegroup[ id=" + id + " ]";
     }
     
 }
