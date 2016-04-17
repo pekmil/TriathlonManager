@@ -8,6 +8,8 @@ package entity.service;
 import entity.Category;
 import java.util.List;
 import javax.ejb.Stateless;
+import javax.enterprise.event.Event;
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.ws.rs.Consumes;
@@ -28,6 +30,9 @@ import javax.ws.rs.Produces;
 public class CategoryFacadeREST extends AbstractFacade<Category> {
     @PersistenceContext(unitName = "TriathlonManagerPU")
     private EntityManager em;
+    
+    @Inject
+    Event<Category> createCategoryEvent;
 
     public CategoryFacadeREST() {
         super(Category.class);
@@ -38,6 +43,8 @@ public class CategoryFacadeREST extends AbstractFacade<Category> {
     @Consumes({"application/json"})
     public void create(Category entity) {
         super.create(entity);
+        em.flush();
+        createCategoryEvent.fire(entity);
     }
 
     @PUT

@@ -43,6 +43,7 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Race.findByStartdate", query = "SELECT r FROM Race r WHERE r.startdate = :startdate"),
     @NamedQuery(name = "Race.findByEnddate", query = "SELECT r FROM Race r WHERE r.enddate = :enddate")})
 public class Race implements Serializable {
+   
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -67,6 +68,8 @@ public class Race implements Serializable {
     @Column(name = "r_enddate")
     @Temporal(TemporalType.DATE)
     private Date enddate;
+    @Column(name = "r_national")
+    private Boolean national;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "race")
     private Collection<Entry> entries;
     @JoinColumn(name = "tournament_id", referencedColumnName = "t_id")
@@ -167,6 +170,14 @@ public class Race implements Serializable {
     @Override
     public String toString() {
         return "entity.Race[ id=" + id + " ]";
+    }
+
+    public Boolean isNational() {
+        return national;
+    }
+
+    public void setNational(Boolean national) {
+        this.national = national;
     }
     
 }

@@ -8,6 +8,8 @@ package entity.service;
 import entity.Agegroup;
 import java.util.List;
 import javax.ejb.Stateless;
+import javax.enterprise.event.Event;
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.ws.rs.Consumes;
@@ -28,6 +30,9 @@ import javax.ws.rs.Produces;
 public class AgegroupFacadeREST extends AbstractFacade<Agegroup> {
     @PersistenceContext(unitName = "TriathlonManagerPU")
     private EntityManager em;
+    
+    @Inject
+    Event<Agegroup> createAgegroupEvent;
 
     public AgegroupFacadeREST() {
         super(Agegroup.class);
@@ -38,6 +43,8 @@ public class AgegroupFacadeREST extends AbstractFacade<Agegroup> {
     @Consumes({"application/json"})
     public void create(Agegroup entity) {
         super.create(entity);
+        em.flush();
+        createAgegroupEvent.fire(entity);
     }
 
     @PUT
@@ -45,6 +52,18 @@ public class AgegroupFacadeREST extends AbstractFacade<Agegroup> {
     @Consumes({"application/json"})
     public void edit(@PathParam("id") Integer id, Agegroup entity) {
         super.edit(entity);
+    }
+    
+    @PUT
+    @Path("incrementyears")
+    public void incrementYears() {
+        em.createQuery("UPDATE Agegroup a SET a.startyear = a.startyear + 1 WHERE a.id > 0").executeUpdate();
+    }
+    
+    @PUT
+    @Path("decrementyears")
+    public void decrementYears() {
+        em.createQuery("UPDATE Agegroup a SET a.startyear = a.startyear - 1 WHERE a.id > 0").executeUpdate();
     }
 
     @DELETE

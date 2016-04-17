@@ -8,6 +8,8 @@ package entity.service;
 import entity.Club;
 import java.util.List;
 import javax.ejb.Stateless;
+import javax.enterprise.event.Event;
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.ws.rs.Consumes;
@@ -28,6 +30,9 @@ import javax.ws.rs.Produces;
 public class ClubFacadeREST extends AbstractFacade<Club> {
     @PersistenceContext(unitName = "TriathlonManagerPU")
     private EntityManager em;
+    
+    @Inject
+    Event<Club> createClubEvent;
 
     public ClubFacadeREST() {
         super(Club.class);
@@ -38,6 +43,14 @@ public class ClubFacadeREST extends AbstractFacade<Club> {
     @Consumes({"application/json"})
     public void create(Club entity) {
         super.create(entity);
+        em.flush();
+        createClubEvent.fire(entity);
+    }
+    
+    public void insert(String clubName){
+        Club club = new Club();
+        club.setName(clubName);
+        create(club);
     }
 
     @PUT

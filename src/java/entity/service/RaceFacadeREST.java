@@ -8,6 +8,8 @@ package entity.service;
 import entity.Race;
 import java.util.List;
 import javax.ejb.Stateless;
+import javax.json.Json;
+import javax.json.JsonObject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.ws.rs.Consumes;
@@ -18,6 +20,7 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.Response;
 
 /**
  *
@@ -39,6 +42,19 @@ public class RaceFacadeREST extends AbstractFacade<Race> {
     public void create(Race entity) {
         super.create(entity);
     }
+    
+    @POST
+    @Consumes({"application/json"})
+    @Produces({"application/json"})
+    @Path("create")
+    public Response create_(Race entity) {
+        super.create(entity);
+        JsonObject model = Json.createObjectBuilder()
+            .add("firstName", "Duke")
+            .add("lastName", "Java")
+        .build();
+        return Response.ok(model).build();
+    }
 
     @PUT
     @Path("{id}")
@@ -58,6 +74,16 @@ public class RaceFacadeREST extends AbstractFacade<Race> {
     @Produces({"application/json"})
     public Race find(@PathParam("id") Integer id) {
         return super.find(id);
+    }
+    
+    @GET
+    @Path("tid/{id}")
+    @Produces({"application/json"})
+    public List<Race> findAll(@PathParam("id") Integer id) {
+        List<Race> result = (List)em.createQuery("SELECT r FROM Race r WHERE r.tournament.id = :tournamentid")
+        .setParameter("tournamentid", id)
+        .getResultList();
+        return result;
     }
 
     @GET
@@ -79,6 +105,18 @@ public class RaceFacadeREST extends AbstractFacade<Race> {
     @Produces("text/plain")
     public String countREST() {
         return String.valueOf(super.count());
+    }
+    
+    public void truncateRaceData(int raceid){
+        List<Integer> contestantIds = em.createQuery("SELECT e.contestant.id FROM Entry e WHERE e.key.raceId = :raceid")
+                                        .setParameter("raceid", raceid).getResultList();
+        em.createQuery("DELETE FROM Entry e WHERE e.key.raceId = :raceid")
+          .setParameter("raceid", raceid)
+          .executeUpdate();
+        em.flush();
+        em.createQuery("DELETE FROM Contestant c WHERE c.id IN :contestantids")
+          .setParameter("contestantids", contestantIds)
+          .executeUpdate();
     }
 
     @Override

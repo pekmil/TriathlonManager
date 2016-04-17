@@ -5,6 +5,9 @@
  */
 package entity;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import java.io.Serializable;
 import java.util.Collection;
 import javax.persistence.Basic;
@@ -34,7 +37,8 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Category.findAll", query = "SELECT c FROM Category c"),
     @NamedQuery(name = "Category.findById", query = "SELECT c FROM Category c WHERE c.id = :id"),
     @NamedQuery(name = "Category.findByName", query = "SELECT c FROM Category c WHERE c.name = :name")})
-public class Category implements Serializable {
+@JsonIdentityInfo(generator=ObjectIdGenerators.PropertyGenerator.class, property="id")
+public class Category extends StaticParameter implements Serializable  {
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -78,6 +82,7 @@ public class Category implements Serializable {
     }
 
     @XmlTransient
+    @JsonIgnore
     public Collection<Entry> getEntries() {
         return entries;
     }
@@ -109,6 +114,11 @@ public class Category implements Serializable {
     @Override
     public String toString() {
         return "entity.Category[ id=" + id + " ]";
+    }
+
+    @Override
+    public String getParameterName() {
+        return name;
     }
     
 }

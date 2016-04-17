@@ -5,9 +5,9 @@
  */
 package entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.io.Serializable;
 import java.util.Collection;
-import java.util.Date;
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -19,8 +19,6 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -38,7 +36,8 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Agegroup.findById", query = "SELECT a FROM Agegroup a WHERE a.id = :id"),
     @NamedQuery(name = "Agegroup.findByStartyear", query = "SELECT a FROM Agegroup a WHERE a.startyear = :startyear"),
     @NamedQuery(name = "Agegroup.findByName", query = "SELECT a FROM Agegroup a WHERE a.name = :name")})
-public class Agegroup implements Serializable {
+public class Agegroup extends StaticParameter implements Serializable {
+   
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -48,13 +47,16 @@ public class Agegroup implements Serializable {
     @Basic(optional = false)
     @NotNull
     @Column(name = "a_startyear")
-    @Temporal(TemporalType.DATE)
-    private Date startyear;
+    private short startyear;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 50)
     @Column(name = "a_name")
     private String name;
+     @Basic(optional = false)
+    @NotNull
+    @Column(name = "a_displayorder")
+    private Short displayorder;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "agegroup")
     private Collection<Entry> entries;
 
@@ -65,7 +67,7 @@ public class Agegroup implements Serializable {
         this.id = id;
     }
 
-    public Agegroup(Integer id, Date startyear, String name) {
+    public Agegroup(Integer id, short startyear, String name) {
         this.id = id;
         this.startyear = startyear;
         this.name = name;
@@ -79,11 +81,11 @@ public class Agegroup implements Serializable {
         this.id = id;
     }
 
-    public Date getStartyear() {
+    public short getStartyear() {
         return startyear;
     }
 
-    public void setStartyear(Date startyear) {
+    public void setStartyear(short startyear) {
         this.startyear = startyear;
     }
 
@@ -94,8 +96,17 @@ public class Agegroup implements Serializable {
     public void setName(String name) {
         this.name = name;
     }
+    
+    public Short getDisplayorder() {
+        return displayorder;
+    }
+
+    public void setDisplayorder(Short displayorder) {
+        this.displayorder = displayorder;
+    }
 
     @XmlTransient
+    @JsonIgnore
     public Collection<Entry> getEntries() {
         return entries;
     }
@@ -126,7 +137,12 @@ public class Agegroup implements Serializable {
 
     @Override
     public String toString() {
-        return "entity.Agegroup[ id=" + id + " ]";
+        return name;
     }
+
+    @Override
+    public String getParameterName() {
+        return name;
+    }   
     
 }

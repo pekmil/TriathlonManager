@@ -5,9 +5,10 @@
  */
 package entity;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import java.io.Serializable;
 import java.util.Collection;
-import java.util.Date;
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -21,8 +22,6 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -39,9 +38,10 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Contestant.findAll", query = "SELECT c FROM Contestant c"),
     @NamedQuery(name = "Contestant.findById", query = "SELECT c FROM Contestant c WHERE c.id = :id"),
     @NamedQuery(name = "Contestant.findByName", query = "SELECT c FROM Contestant c WHERE c.name = :name"),
-    @NamedQuery(name = "Contestant.findByBirthdate", query = "SELECT c FROM Contestant c WHERE c.birthdate = :birthdate"),
+    @NamedQuery(name = "Contestant.findByBirthdate", query = "SELECT c FROM Contestant c WHERE c.birthyear = :birthyear"),
     @NamedQuery(name = "Contestant.findByGender", query = "SELECT c FROM Contestant c WHERE c.gender = :gender"),
     @NamedQuery(name = "Contestant.findByFromtown", query = "SELECT c FROM Contestant c WHERE c.fromtown = :fromtown")})
+@JsonIdentityInfo(generator=ObjectIdGenerators.PropertyGenerator.class, property="id")
 public class Contestant implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
@@ -56,9 +56,8 @@ public class Contestant implements Serializable {
     private String name;
     @Basic(optional = false)
     @NotNull
-    @Column(name = "c_birthdate")
-    @Temporal(TemporalType.DATE)
-    private Date birthdate;
+    @Column(name = "c_birthyear")
+    private short birthyear;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 6)
@@ -80,10 +79,10 @@ public class Contestant implements Serializable {
         this.id = id;
     }
 
-    public Contestant(Integer id, String name, Date birthdate, String gender) {
+    public Contestant(Integer id, String name, short birthyear, String gender) {
         this.id = id;
         this.name = name;
-        this.birthdate = birthdate;
+        this.birthyear = birthyear;
         this.gender = gender;
     }
 
@@ -103,12 +102,12 @@ public class Contestant implements Serializable {
         this.name = name;
     }
 
-    public Date getBirthdate() {
-        return birthdate;
+    public short getBirthyear() {
+        return birthyear;
     }
 
-    public void setBirthdate(Date birthdate) {
-        this.birthdate = birthdate;
+    public void setBirthyear(short birthyear) {
+        this.birthyear = birthyear;
     }
 
     public String getGender() {

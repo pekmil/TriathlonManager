@@ -23,15 +23,15 @@ public class EntryPK implements Serializable {
     private int raceId;
     @Basic(optional = false)
     @NotNull
-    @Column(name = "contestant_id")
-    private int contestantId;
+    @Column(name = "e_racenum")
+    private short racenum;
 
     public EntryPK() {
     }
 
-    public EntryPK(int raceId, int contestantId) {
+    public EntryPK(int raceId, short acenum) {
         this.raceId = raceId;
-        this.contestantId = contestantId;
+        this.racenum = acenum;
     }
 
     public int getRaceId() {
@@ -42,19 +42,19 @@ public class EntryPK implements Serializable {
         this.raceId = raceId;
     }
 
-    public int getContestantId() {
-        return contestantId;
+    public short getRacenum() {
+        return racenum;
     }
 
-    public void setContestantId(int contestantId) {
-        this.contestantId = contestantId;
+    public void setRacenum(short racenum) {
+        this.racenum = racenum;
     }
 
     @Override
     public int hashCode() {
         int hash = 0;
         hash += (int) raceId;
-        hash += (int) contestantId;
+        hash += (int) racenum;
         return hash;
     }
 
@@ -68,7 +68,7 @@ public class EntryPK implements Serializable {
         if (this.raceId != other.raceId) {
             return false;
         }
-        if (this.contestantId != other.contestantId) {
+        if (this.racenum != other.racenum) {
             return false;
         }
         return true;
@@ -76,7 +76,7 @@ public class EntryPK implements Serializable {
 
     @Override
     public String toString() {
-        return "entity.EntryPK[ raceId=" + raceId + ", contestantId=" + contestantId + " ]";
+        return "entity.EntryPK[ raceId=" + raceId + ", racenum=" + racenum + " ]";
     }
     
 }
