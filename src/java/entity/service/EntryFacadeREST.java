@@ -180,7 +180,7 @@ public class EntryFacadeREST extends AbstractFacade<Entry> {
             queryString = queryString + " AND e.category.id = :categoryid";
         }
         if(national == 1){
-            queryString = queryString + " AND e.licencenum IS NOT NULL";
+            queryString = queryString + " AND e.licencenum IS NOT NULL AND e.licencenum != ''";
         }
         if(team == 1){
             queryString = queryString + " AND e.contestant.club IS NOT NULL";
