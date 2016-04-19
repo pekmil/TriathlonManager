@@ -15,7 +15,6 @@ import java.util.Properties;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
-import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -104,14 +103,18 @@ public class LicenceFacadeREST extends AbstractFacade<Licence> {
     @GET
     @Path("licenceexists/{licence}")
     public Response licenceExists(@PathParam("licence") String licence) {
-        List results = em.createQuery("SELECT 1 FROM Licence l WHERE l.licencenum = :licence").
-            setParameter("licence", licence).getResultList();
-        if(results == null || results.isEmpty()){
-            return Response.status(Status.NOT_FOUND).build();
-        }
-        else{
+        if(exists(licence)){
             return Response.ok().build();
         }
+        else{
+            return Response.status(Status.NOT_FOUND).build();
+        }
+    }
+    
+    public boolean exists(String licence){
+        List results = em.createQuery("SELECT 1 FROM Licence l WHERE l.licencenum = :licence").
+            setParameter("licence", licence.trim()).getResultList();
+        return !(results == null || results.isEmpty());
     }
     
     @POST
