@@ -93,16 +93,25 @@ public class LicenceFacadeREST extends AbstractFacade<Licence> {
     }
     
     @GET
+    @Path("{licence}")
+    @Produces({"application/json"})
+    public List<Licence> find(@PathParam("licence") String licence) {
+        return em.createQuery("SELECT l FROM Licence l WHERE l.licencenum = :licence").
+                  setParameter("licence", licence).
+                  getResultList();
+    }
+    
+    @GET
     @Path("licenceexists/{licence}")
     public Response licenceExists(@PathParam("licence") String licence) {
-        try{
-            em.createQuery("SELECT 1 FROM Licence l WHERE l.licencenum = :licence").
-                setParameter("licence", licence).getSingleResult();
-        }
-        catch(NoResultException ex){
+        List results = em.createQuery("SELECT 1 FROM Licence l WHERE l.licencenum = :licence").
+            setParameter("licence", licence).getResultList();
+        if(results == null || results.isEmpty()){
             return Response.status(Status.NOT_FOUND).build();
         }
-        return Response.ok().build();
+        else{
+            return Response.ok().build();
+        }
     }
     
     @POST
@@ -127,21 +136,7 @@ public class LicenceFacadeREST extends AbstractFacade<Licence> {
     
     public int deleteLicenceData(){
         return em.createQuery("DELETE FROM Licence l").executeUpdate();
-    }
-    
-    @GET
-    @Path("{id}")
-    @Produces({"application/json"})
-    public Licence find(@PathParam("id") Integer id) {
-        return super.find(id);
-    }
-
-    @GET
-    @Override
-    @Produces({"application/json"})
-    public List<Licence> findAll() {
-        return super.findAll();
-    }
+    }        
     
     @GET
     @Path("{from}/{to}")
