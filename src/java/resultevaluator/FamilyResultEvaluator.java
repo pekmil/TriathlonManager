@@ -41,18 +41,20 @@ public class FamilyResultEvaluator extends ResultEvaluator {
         return calculateFamilyResults(getRaceResults(entries));
     }
         
-    private List<FamilyResult> calculateFamilyResults(Map<String, Map<String, List<Entry>>> raceResults) {
+    private List<FamilyResult> calculateFamilyResults(Map<String, Map<String, Map<String, List<Entry>>>> raceResults) {
         Map<String, FamilyResult> resultMap = new HashMap<>();
         List<FamilyResult> results = new ArrayList<>();
         raceResults.values().stream().forEach(map -> {
-            map.keySet().forEach(key -> {
-                List<Entry> entries = map.get(key);
-                entries.stream().filter((e) -> (e.getFamilyentry() != null)).forEach((e) -> {
-                    String familyName = e.getFamilyentry().getName();
-                    if(!resultMap.containsKey(familyName)){
-                        resultMap.put(familyName, new FamilyResult(familyName));
-                    }
-                    resultMap.get(familyName).addMemberResult(mapEntry(e, entries.indexOf(e)));
+            map.values().stream().forEach(map_ -> {
+                map_.keySet().forEach(key -> {
+                    List<Entry> entries = map_.get(key);
+                    entries.stream().filter((e) -> (e.getFamilyentry() != null)).forEach((e) -> {
+                        String familyName = e.getFamilyentry().getName();
+                        if(!resultMap.containsKey(familyName)){
+                            resultMap.put(familyName, new FamilyResult(familyName));
+                        }
+                        resultMap.get(familyName).addMemberResult(mapEntry(e, entries.indexOf(e)));
+                    });
                 });
             });
         });
@@ -61,15 +63,26 @@ public class FamilyResultEvaluator extends ResultEvaluator {
         return results;
     }
     
-    private Map<String, Map<String, List<Entry>>> getRaceResults(List<Entry> entries){
-        final Map<String, List<Entry>> entriesByAgegroup = entries.stream().
+    private Map<String, Map<String, Map<String, List<Entry>>>> getRaceResults(List<Entry> entries){
+        final Map<String, List<Entry>> entriesByCategory = entries.stream().
                 sorted((e1, e2) -> e1.getRacetime().compareTo(e2.getRacetime())).
+                collect(Collectors.groupingBy(e -> e.getCategoryName()));
+        final Map<String, Map<String, List<Entry>>> groupedEntries_ = new HashMap<>();
+        entriesByCategory.keySet().stream().forEach((category) -> {
+            Map<String, List<Entry>> entriesByAgegroup = entriesByCategory.get(category).stream().
                 collect(Collectors.groupingBy(Entry::getAgegroupName));
-        final Map<String, Map<String, List<Entry>>> groupedEntries = new HashMap<>();
-        entriesByAgegroup.keySet().stream().forEach((agegroup) -> {
-            Map<String, List<Entry>> entriesByGender = entriesByAgegroup.get(agegroup).stream().
-                collect(Collectors.groupingBy(e -> e.getContestant().getGender()));
-            groupedEntries.put(agegroup, entriesByGender);
+            groupedEntries_.put(category, entriesByAgegroup);
+        });
+        final Map<String, Map<String, Map<String, List<Entry>>>> groupedEntries = new HashMap<>();
+        groupedEntries_.keySet().stream().forEach((category) -> {
+            groupedEntries_.get(category).keySet().stream().forEach((agegroup) -> {
+                Map<String, List<Entry>> entriesByGender = groupedEntries_.get(category).get(agegroup).stream().
+                    collect(Collectors.groupingBy(e -> e.getContestant().getGender()));
+                if(!groupedEntries.containsKey(category)){
+                    groupedEntries.put(category, new HashMap<>());
+                }
+                groupedEntries.get(category).put(agegroup, entriesByGender);
+            });
         });
         return groupedEntries;
     }
