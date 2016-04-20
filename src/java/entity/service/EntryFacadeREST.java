@@ -17,6 +17,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -81,6 +85,8 @@ public class EntryFacadeREST extends AbstractFacade<Entry> {
     ClubFacadeREST clubFacade;
     @EJB
     ContestantFacadeREST contestantFacade;
+    @EJB
+    LicenceFacadeREST licenceFacade;
     
     private final ResultParams resultParams = new ResultParams();
     
@@ -131,6 +137,7 @@ public class EntryFacadeREST extends AbstractFacade<Entry> {
     
     @POST
     @Path("result/{raceid}")
+    @Produces({"application/json"})
     public Response setRacetime(@PathParam("raceid") Integer raceid, ResultData resultData) {
         EntryPK key = new EntryPK(raceid, resultData.getRacenum());
         Entry entry = em.find(Entry.class, key, LockModeType.PESSIMISTIC_WRITE);
@@ -149,6 +156,24 @@ public class EntryFacadeREST extends AbstractFacade<Entry> {
                      Utils.simpleTimeFormat.format(entry.getRacetime());
         JsonObject jsonMsg = JsonBuilder.getJsonMsg(msg, JsonBuilder.MsgType.INFO, null);
         NotificationEndpoint.send(msg);
+        return Response.ok(jsonMsg).build();
+    }
+        
+    public Response modifyRacetime(Integer raceid, ResultData resultData) {
+        EntryPK key = new EntryPK(raceid, resultData.getRacenum());
+        Entry entry = em.find(Entry.class, key, LockModeType.PESSIMISTIC_WRITE);
+        if(entry.getStatus().equals("FINISHED") && entry.getRacetime() != null){
+            entry.setRacetime(resultData.getRacetime());
+            em.merge(entry);
+        }
+        else{
+            JsonObject jsonMsg = JsonBuilder.getJsonMsg("Az eredmény nem a megfelelő állapotban van!", JsonBuilder.MsgType.WARNING, null);
+            return Response.status(500).entity(jsonMsg).build();
+        }
+        String msg = "Eredmény módosítva: " + entry.getContestant().getName() +
+                     " (" + entry.getKey().getRacenum() + ") - " +
+                     Utils.simpleTimeFormat.format(entry.getRacetime());
+        JsonObject jsonMsg = JsonBuilder.getJsonMsg(msg, JsonBuilder.MsgType.INFO, null);
         return Response.ok(jsonMsg).build();
     }
     
@@ -211,6 +236,8 @@ public class EntryFacadeREST extends AbstractFacade<Entry> {
     @Produces("application/json; charset=UTF-8")
     public Response processCSV(@FormParam("filename") String fileName, @PathParam("raceid") Integer raceid){
         parameters.initClubs();
+        List<String> invalidLicences = new ArrayList<>();
+        invalidLicences.add("nev;rajtszam;licensz");
         try(Reader in = new InputStreamReader(new FileInputStream(appParameters.getProperty("uploadFolder") + fileName), "UTF-8")) {
             Iterable<CSVRecord> records = CSVFormat.EXCEL.withSkipHeaderRecord()
                                                          .withDelimiter(';')
@@ -233,9 +260,15 @@ public class EntryFacadeREST extends AbstractFacade<Entry> {
                 ed.setPaid(record.get("paid").equals("IGEN"));
                 ed.setRemainingpayment(record.get("paid").matches("[1-9]\\d{0,10}") ? Integer.parseInt(record.get("paid")) : 0);
                 ed.setLicencenum(record.get("licencenum"));
+                if(ed.getLicencenum() != null && !ed.getLicencenum().isEmpty()){
+                    if(!licenceFacade.exists(ed.getLicencenum())){
+                        invalidLicences.add(ed.getName() + ";" + ed.getRacenum() + ";" + ed.getLicencenum());
+                    }
+                }
                 insertEntry(ed, raceid);
                 ++count;
             }
+            Files.write(Paths.get(appParameters.getProperty("uploadFolder"), "invalid_licences_" + fileName), invalidLicences, Charset.forName("UTF-8"));
             return Response.ok(String.valueOf(count)).build();
         } catch (FileNotFoundException ex) {
             HashMap<String, Object> params = new HashMap<>();

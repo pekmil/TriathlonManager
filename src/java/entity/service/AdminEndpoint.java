@@ -24,6 +24,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import util.JsonBuilder;
 import viewmodel.EntryOption;
+import viewmodel.ResultData;
 import viewmodel.ValueOption;
 
 /**
@@ -108,6 +109,13 @@ public class AdminEndpoint {
         int del = licenceFacade.deleteLicenceData();
         JsonObject jsonMsg = JsonBuilder.getJsonMsg("A licence adatok törlése sikeresen megtörtént! (" + del + " db)", JsonBuilder.MsgType.SUCCESS, null);
         return Response.ok().entity(jsonMsg).build();
+    }
+    
+    @POST
+    @Path("modifyresult/{raceid}")
+    @Produces({"application/json"})
+    public Response modifyRacetime(@PathParam("raceid") Integer raceid, ResultData resultData){
+        return entryFacade.modifyRacetime(raceid, resultData);
     }
     
 }
