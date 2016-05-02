@@ -16,6 +16,8 @@ public class ResultData {
     private short racenum;
     private Date racetime;
     
+    private String racetimemoddesc;
+    
     public ResultData(){
         
     }
@@ -34,6 +36,14 @@ public class ResultData {
 
     public void setRacetime(Date racetime) {
         this.racetime = racetime;
+    }
+
+    public String getRacetimemoddesc() {
+        return racetimemoddesc;
+    }
+
+    public void setRacetimemoddesc(String racetimemoddesc) {
+        this.racetimemoddesc = racetimemoddesc;
     }
     
 }

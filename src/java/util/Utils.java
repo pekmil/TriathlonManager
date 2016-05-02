@@ -18,10 +18,12 @@ public class Utils {
     
     public static final SimpleDateFormat simpleTimeFormat;
     public static final SimpleDateFormat simpleDateFormat;
+    public static final SimpleDateFormat simpleDateTimeFormat;
     
     static{
         simpleTimeFormat = new SimpleDateFormat("HH:mm:ss");
         simpleDateFormat = new SimpleDateFormat("yyyy_MM_dd");
+        simpleDateTimeFormat = new SimpleDateFormat("yyyy.MM.dd HH:mm:ss");
     }
     
     public static Duration dateToDuration(Date d){
@@ -41,6 +43,14 @@ public class Utils {
         c.set(Calendar.MONTH, 0);
         c.set(Calendar.DAY_OF_MONTH, 1);
         return c.getTime();
+    }
+    
+    public static String formatDateTime(Date date){
+        return simpleDateTimeFormat.format(date);
+    }
+    
+    public static String formatTime(Date date){
+        return simpleTimeFormat.format(date);
     }
     
 }

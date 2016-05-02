@@ -163,6 +163,7 @@ public class EntryFacadeREST extends AbstractFacade<Entry> {
         EntryPK key = new EntryPK(raceid, resultData.getRacenum());
         Entry entry = em.find(Entry.class, key, LockModeType.PESSIMISTIC_WRITE);
         if(entry.getStatus().equals("FINISHED") && entry.getRacetime() != null){
+            entry.appendRacetimeMod(resultData.getRacetimemoddesc());
             entry.setRacetime(resultData.getRacetime());
             em.merge(entry);
         }

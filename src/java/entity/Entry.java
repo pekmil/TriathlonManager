@@ -37,7 +37,7 @@ import util.Utils;
     @NamedQuery(name = "Entry.findByStatus", query = "SELECT e FROM Entry e WHERE e.status = :status"),
     @NamedQuery(name = "Entry.findByLicencenum", query = "SELECT e FROM Entry e WHERE e.licencenum = :licencenum")})
 @JsonIdentityInfo(generator=ObjectIdGenerators.PropertyGenerator.class, property="key")
-public class Entry implements Serializable {            
+public class Entry implements Serializable {                
     
     private static final long serialVersionUID = 1L;
     @EmbeddedId
@@ -58,6 +58,9 @@ public class Entry implements Serializable {
     @Column(name = "e_racetime")
     @Temporal(TemporalType.TIME)
     private Date racetime;
+    @Size(max = 1000)
+    @Column(name = "e_racetimemods")
+    private String racetimemods;
     @Column(name = "e_finishtime")
     @Temporal(TemporalType.TIMESTAMP)
     private Date finishtime;
@@ -272,6 +275,25 @@ public class Entry implements Serializable {
 
     public void setRemainingpayment(Integer remainingpayment) {
         this.remainingpayment = remainingpayment;
+    }
+
+    public String getRacetimemods() {
+        return racetimemods;
+    }
+
+    public void setRacetimemods(String racetimemods) {
+        this.racetimemods = racetimemods;
+    }
+    
+    public void appendRacetimeMod(String modDesc){
+        StringBuilder sb = new StringBuilder("MOD");
+        sb.append(",PREVTIME:").append(Utils.formatTime(racetime))
+          .append(",MODTIME:").append(Utils.formatDateTime(new Date()))
+          .append(",MODDESC:").append(modDesc);
+        if(this.racetimemods != null){
+            sb.insert(0, this.racetimemods + "|");
+        }
+        this.setRacetimemods(sb.toString());
     }
     
 }
