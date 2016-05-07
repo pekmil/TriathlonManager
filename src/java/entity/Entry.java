@@ -4,7 +4,9 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import javax.persistence.Basic;
 import javax.persistence.Column;
@@ -151,7 +153,21 @@ public class Entry implements Serializable {
     }
 
     public void setStatus(String status) {
+        if(this.status != null && !this.status.equals(status) && !enabledStatusTransitions().contains(status)){
+            throw new IllegalArgumentException("A beállítandó státusz nem megfelelő: " + this.status + " -> " + status);
+        }
         this.status = status;
+    }
+    
+    private List<String> enabledStatusTransitions(){
+        switch(this.status){
+            case "PRE":
+                return Arrays.asList("CHECKED", "NOTPRESENT");
+            case "CHECKED":
+                return Arrays.asList("FINISHED", "DNF", "DSQ", "NOTSTARTED");
+            default:
+                return Arrays.asList("");
+        }
     }
 
     public String getLicencenum() {

@@ -323,9 +323,19 @@ public class EntryFacadeREST extends AbstractFacade<Entry> {
     }
 
     @PUT
-    @Path("{id}")
     @Consumes({"application/json"})
-    public void edit(@PathParam("id") PathSegment id, Entry entity) {
+    public void updateEntry(Entry entity) {
+        Entry entry = (Entry)em.createQuery("SELECT e FROM Entry e WHERE e.key.raceId = :raceid AND e.key.racenum = :racenum")
+        .setParameter("raceid", entity.getKey().getRaceId())
+        .setParameter("racenum", entity.getKey().getRacenum())
+        .getSingleResult();
+        entry.setAgegroup(entity.getAgegroup());
+        entry.setCategory(entity.getCategory());
+        entry.setLicencenum(entity.getLicencenum());
+        entry.setPaid(entity.isPaid());
+        entry.setFamilyentry(entity.getFamilyentry());
+        entry.setInvoice(entity.getInvoice());
+        entry.setStatus(entity.getStatus());
         super.edit(entity);
     }
 
