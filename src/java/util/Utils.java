@@ -9,6 +9,7 @@ import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.TimeZone;
 
 /**
  *
@@ -43,6 +44,20 @@ public class Utils {
         c.set(Calendar.MONTH, 0);
         c.set(Calendar.DAY_OF_MONTH, 1);
         return c.getTime();
+    }
+    
+    public static Date truncateDateWithDatetime(Date orig){
+        if(orig == null) return null;
+        Calendar c = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
+        c.setTimeInMillis(orig.getTime());
+        Calendar output = Calendar.getInstance();
+        output.set(Calendar.YEAR, 1970);
+        output.set(Calendar.MONTH, 0);
+        output.set(Calendar.DAY_OF_MONTH, 1);
+        output.set(Calendar.HOUR_OF_DAY, c.get(Calendar.HOUR_OF_DAY));
+        output.set(Calendar.MINUTE, c.get(Calendar.MINUTE));
+        output.set(Calendar.SECOND, c.get(Calendar.SECOND));
+        return output.getTime();
     }
     
     public static String formatDateTime(Date date){

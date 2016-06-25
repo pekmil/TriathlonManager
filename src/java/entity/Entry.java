@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import java.io.Serializable;
+import java.time.Duration;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -19,10 +21,13 @@ import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 import util.Utils;
+import viewmodel.ResultData;
 
 /**
  *
@@ -39,7 +44,7 @@ import util.Utils;
     @NamedQuery(name = "Entry.findByStatus", query = "SELECT e FROM Entry e WHERE e.status = :status"),
     @NamedQuery(name = "Entry.findByLicencenum", query = "SELECT e FROM Entry e WHERE e.licencenum = :licencenum")})
 @JsonIdentityInfo(generator=ObjectIdGenerators.PropertyGenerator.class, property="key")
-public class Entry implements Serializable {                
+public class Entry implements Serializable {    
     
     private static final long serialVersionUID = 1L;
     @EmbeddedId
@@ -63,6 +68,9 @@ public class Entry implements Serializable {
     @Size(max = 1000)
     @Column(name = "e_racetimemods")
     private String racetimemods;
+    @Size(max = 500)
+    @Column(name = "e_resultmods")
+    private String resultmods;
     @Column(name = "e_finishtime")
     @Temporal(TemporalType.TIMESTAMP)
     private Date finishtime;
@@ -311,5 +319,92 @@ public class Entry implements Serializable {
         }
         this.setRacetimemods(sb.toString());
     }
+    
+    @Transient
+    public void applyResultmods(ResultData data, Map<String, Resultmod> resultmods){
+        if(data.getResultmodIds() != null){
+            for(String id : data.getResultmodIds()){
+                Resultmod rm = resultmods.get(id);
+                if(!data.isRollback() && this.resultmods.contains(rm.getIdname())){
+                    throw new IllegalArgumentException("Már alkalmazott eredmény módosító tétel ismételt hozzáadásának kísérlete!");
+                }
+                else if(data.isRollback() && !this.resultmods.contains(rm.getIdname())){
+                    throw new IllegalArgumentException("Még nem alkalmazott eredmény módosító tétel törlésének kísérlete!");
+                }
+                adjustRacetime(rm.getTime(), rm.isPlus(), data.isRollback());
+                appendResultmod(rm, data.isRollback());
+            }
+        }
+    }
+    
+    private void adjustRacetime(Date time, boolean plus, boolean rollback){
+        Duration racetimeDuration = Utils.dateToDuration(this.racetime);
+        Duration adjustment = Utils.dateToDuration(time);
+        long adjustmentInMillis = 0;
+        if((plus && !rollback) || (!plus && rollback)){
+            adjustmentInMillis = racetimeDuration.plus(adjustment).toMillis();
+        }
+        else if((!plus && !rollback) || (plus && rollback)){
+            adjustmentInMillis = racetimeDuration.minus(adjustment).toMillis();
+        }
+        this.racetime = Utils.truncateDateWithDatetime(new Date(adjustmentInMillis));
+    }
+    
+    private void appendResultmod(Resultmod rm, boolean rollback){
+        if(rollback){
+            int start = this.resultmods.indexOf(rm.getIdname());
+            int end = this.resultmods.indexOf("|", start) + 1;
+            this.setResultmods(this.resultmods.replace(this.resultmods.subSequence(start, end), ""));
+        }
+        else{
+            StringBuilder sb = new StringBuilder(rm.getIdname());
+            sb.append(",").append(rm.getName())
+              .append(",").append(rm.isPlus() ? "+" : "-")
+              .append(Utils.simpleTimeFormat.format(rm.getTime())).append("|");
+            if(this.resultmods != null){
+                sb.insert(0, this.resultmods);
+            }
+            this.setResultmods(sb.toString());
+        }
+    }
+
+    @JsonIgnore
+    @XmlTransient
+    public String getResultmods() {
+        return resultmods;
+    }
+
+    public void setResultmods(String resultmods) {
+        this.resultmods = resultmods;
+    }
+    
+    @Transient
+    public List<String> getResultmodList(){
+        if(this.resultmods == null) return null;
+        else{
+            List<String> rmids = new ArrayList<>();
+            for(String rm : this.resultmods.split("\\|")){
+                rmids.add(rm.split(",")[0]);
+            }
+            return rmids;
+        }
+    }
+    
+    public void setResultmodList(List<String> rml){}
+    
+    @Transient
+    public List<String> getResultmodNames(){
+        if(this.resultmods == null) return null;
+        else{
+            List<String> rmids = new ArrayList<>();
+            for(String rm : this.resultmods.split("\\|")){
+                String[] parts = rm.split(",");
+                rmids.add(parts[1] + " (" + parts[2] + ")");
+            }
+            return rmids;
+        }
+    }
+    
+    public void setResultmodNames(List<String> rml){}
     
 }

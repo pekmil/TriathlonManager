@@ -8,10 +8,12 @@ package ejb;
 import entity.Agegroup;
 import entity.Category;
 import entity.Club;
+import entity.Resultmod;
 import entity.StaticParameter;
 import entity.service.AgegroupFacadeREST;
 import entity.service.CategoryFacadeREST;
 import entity.service.ClubFacadeREST;
+import entity.service.ResultmodFacadeREST;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -34,9 +36,10 @@ import javax.enterprise.event.Observes;
 @ConcurrencyManagement(ConcurrencyManagementType.CONTAINER)
 public class StaticParameters {
     
-    private HashMap<String, Category> categories;
-    private HashMap<String, Agegroup> agegroups;
-    private HashMap<String, Club> clubs;
+    private Map<String, Category> categories;
+    private Map<String, Agegroup> agegroups;
+    private Map<String, Club> clubs;
+    private Map<String, Resultmod> resultmods;
     
     @EJB
     private CategoryFacadeREST categoryFacade;
@@ -44,6 +47,8 @@ public class StaticParameters {
     private AgegroupFacadeREST agegroupFacade;
     @EJB
     private ClubFacadeREST clubFacade;
+    @EJB
+    private ResultmodFacadeREST resultmodFacade;
     
     @PostConstruct
     public void init(){
@@ -52,7 +57,9 @@ public class StaticParameters {
         agegroups = new HashMap<>();
         populateMap(agegroups, agegroupFacade.findAll());
         clubs = new HashMap<>();
-        populateMap(clubs, clubFacade.findAll());        
+        populateMap(clubs, clubFacade.findAll());   
+        resultmods = new HashMap<>();
+        populateMap(resultmods, resultmodFacade.findAll());   
     }
     
     
@@ -86,7 +93,7 @@ public class StaticParameters {
         return agegroups;
     }
 
-    public HashMap<String, Category> getCategories() {
+    public Map<String, Category> getCategories() {
         return categories;
     }
     
@@ -98,7 +105,21 @@ public class StaticParameters {
     @Lock(LockType.WRITE)
     public void addClub(@Observes Club club){
         clubs.put(club.getName(), club);
-    }        
+    }  
+    
+    @Lock(LockType.READ)
+    public Resultmod getResultmod(String name){
+        return resultmods.get(name);
+    }
+    
+    @Lock(LockType.WRITE)
+    public void addResultmod(@Observes Resultmod resultmod){
+        resultmods.put(resultmod.getIdname(), resultmod);
+    }
+
+    public Map<String, Resultmod> getResultmods() {
+        return resultmods;
+    }
     
     private <T extends StaticParameter> void populateMap(Map<String, T> map, List<T> elements){
         elements.stream().forEach(e ->{

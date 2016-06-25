@@ -7,6 +7,7 @@ package viewmodel;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.Date;
+import java.util.List;
 
 /**
  *
@@ -20,6 +21,7 @@ public class Result {
     private String licencenum;
     private String racetime;
     private Date rt;
+    private List<String> resultmodNames;
 
     public Result() {
 
@@ -72,6 +74,14 @@ public class Result {
 
     public void setRt(Date rt) {
         this.rt = rt;
+    }
+
+    public List<String> getResultmodNames() {
+        return resultmodNames;
+    }
+
+    public void setResultmodNames(List<String> resultmodNames) {
+        this.resultmodNames = resultmodNames;
     }
 
 }

@@ -5,7 +5,9 @@
  */
 package viewmodel;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 /**
  *
@@ -18,8 +20,11 @@ public class ResultData {
     
     private String racetimemoddesc;
     
+    private List<String> resultmodIds;
+    private boolean rollback;
+    
     public ResultData(){
-        
+        this.resultmodIds = new ArrayList<>();
     }
 
     public short getRacenum() {
@@ -44,6 +49,22 @@ public class ResultData {
 
     public void setRacetimemoddesc(String racetimemoddesc) {
         this.racetimemoddesc = racetimemoddesc;
+    }
+
+    public List<String> getResultmodIds() {
+        return resultmodIds;
+    }
+
+    public void setResultmodIds(List<String> resultmodIds) {
+        this.resultmodIds = resultmodIds;
+    }
+
+    public boolean isRollback() {
+        return rollback;
+    }
+
+    public void setRollback(boolean rollback) {
+        this.rollback = rollback;
     }
     
 }

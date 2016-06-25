@@ -144,6 +144,7 @@ public class EntryFacadeREST extends AbstractFacade<Entry> {
         if(entry.getStatus().equals("CHECKED") && entry.getRacetime() == null){
             entry.setFinishtime(new Date());
             entry.setRacetime(resultData.getRacetime());
+            entry.applyResultmods(resultData, parameters.getResultmods());
             entry.setStatus("FINISHED");
             em.merge(entry);
         }
@@ -152,6 +153,28 @@ public class EntryFacadeREST extends AbstractFacade<Entry> {
             return Response.status(500).entity(jsonMsg).build();
         }
         String msg = "Eredmény rögzítve: " + entry.getContestant().getName() +
+                     " (" + entry.getKey().getRacenum() + ") - " +
+                     Utils.simpleTimeFormat.format(entry.getRacetime());
+        JsonObject jsonMsg = JsonBuilder.getJsonMsg(msg, JsonBuilder.MsgType.INFO, null);
+        NotificationEndpoint.send(msg);
+        return Response.ok(jsonMsg).build();
+    }
+    
+    @POST
+    @Path("resultmod/{raceid}")
+    @Produces({"application/json"})
+    public Response applyResultmod(@PathParam("raceid") Integer raceid, ResultData resultData) {
+        EntryPK key = new EntryPK(raceid, resultData.getRacenum());
+        Entry entry = em.find(Entry.class, key, LockModeType.PESSIMISTIC_WRITE);
+        if(entry.getStatus().equals("FINISHED") && entry.getRacetime() != null){
+            entry.applyResultmods(resultData, parameters.getResultmods());
+            em.merge(entry);
+        }
+        else{
+            JsonObject jsonMsg = JsonBuilder.getJsonMsg("Az eredmény nem a megfelelő állapotban van!", JsonBuilder.MsgType.WARNING, null);
+            return Response.status(500).entity(jsonMsg).build();
+        }
+        String msg = "Eredmény módosító tétel alkalmazva: " + entry.getContestant().getName() +
                      " (" + entry.getKey().getRacenum() + ") - " +
                      Utils.simpleTimeFormat.format(entry.getRacetime());
         JsonObject jsonMsg = JsonBuilder.getJsonMsg(msg, JsonBuilder.MsgType.INFO, null);

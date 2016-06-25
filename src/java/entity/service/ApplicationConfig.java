@@ -45,6 +45,7 @@ public class ApplicationConfig extends Application {
         resources.add(entity.service.InvoiceFacadeREST.class);
         resources.add(entity.service.LicenceFacadeREST.class);
         resources.add(entity.service.RaceFacadeREST.class);
+        resources.add(entity.service.ResultmodFacadeREST.class);
         resources.add(entity.service.TournamentFacadeREST.class);
     }
     
