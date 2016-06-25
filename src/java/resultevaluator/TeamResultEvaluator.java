@@ -21,6 +21,8 @@ import viewmodel.TeamResults;
 public class TeamResultEvaluator extends ResultEvaluator {
     
     private final Map<String, String> teamAgegroupMapper = new HashMap<>();
+    
+    private final int teamPlaces;
 
     public TeamResultEvaluator(Properties appProperties) {
         super(appProperties);
@@ -30,9 +32,10 @@ public class TeamResultEvaluator extends ResultEvaluator {
             String[] parts = teamAgegroup.split(";");
             String teamAgegroupName = parts[1];
             for(String originalAgegroupPrefix : parts[0].split(",")){
-                teamAgegroupMapper.put(originalAgegroupPrefix, teamAgegroupName);
+                this.teamAgegroupMapper.put(originalAgegroupPrefix, teamAgegroupName);
             }
         }
+        this.teamPlaces = Integer.parseInt(appProperties.getProperty("teamPlaces", "3"));
     }
 
     @Override
@@ -48,7 +51,7 @@ public class TeamResultEvaluator extends ResultEvaluator {
                 Map<String, List<Entry>> entriesByTeam = entriesByGender.get(gender).stream().
                                 collect(Collectors.groupingBy(e -> e.getContestant().getClub().getName()));
                 entriesByTeam.keySet().stream().
-                                       filter(team -> entriesByTeam.get(team).size() >= 3).
+                                       filter(team -> entriesByTeam.get(team).size() >= teamPlaces).
                                        forEach(team -> {                    
                     List<Result> results = entriesByTeam.get(team).stream().map(e -> {
                         Result r = new Result();
@@ -63,7 +66,7 @@ public class TeamResultEvaluator extends ResultEvaluator {
                     }).collect(Collectors.toList());
                     TeamResult tr = new TeamResult();
                     tr.setClubName(team);
-                    tr.setTeamResults(results);
+                    tr.setTeamResults(results, teamPlaces);
                     if(!resultsByGender.containsKey(gender)) resultsByGender.put(gender, new ArrayList<>());
                     resultsByGender.get(gender).add(tr);
                 });

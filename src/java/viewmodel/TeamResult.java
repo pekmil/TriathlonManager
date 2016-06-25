@@ -43,9 +43,9 @@ public class TeamResult {
         return teamResults;
     }
 
-    public void setTeamResults(List<Result> teamResults) {
+    public void setTeamResults(List<Result> teamResults, int teamPlaces) {
         Collections.sort(teamResults, (r1, r2) -> r1.getRt().compareTo(r2.getRt()));
-         for(int i = 0; i < 3; ++i){
+         for(int i = 0; i < teamPlaces; ++i){
             Duration d = Utils.dateToDuration(teamResults.get(i).getRt());
             teamDuration = teamDuration.plus(d);
         }
