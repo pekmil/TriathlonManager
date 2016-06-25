@@ -58,6 +58,7 @@ public class TeamResultEvaluator extends ResultEvaluator {
                         r.setLicencenum(e.getLicencenum());
                         r.setRt(e.getRacetime());
                         r.setRacetime(Utils.simpleTimeFormat.format(e.getRacetime()));
+                        r.setResultmodNames(e.getResultmodNames());
                         return r;
                     }).collect(Collectors.toList());
                     TeamResult tr = new TeamResult();

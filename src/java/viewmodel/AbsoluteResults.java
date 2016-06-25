@@ -39,6 +39,7 @@ public class AbsoluteResults {
                r.setClub(e.getContestant().getClub() != null ? e.getContestant().getClub().getName() : "-");
                r.setRacetime(simpleTimeFormat.format(e.getRacetime()));
                r.setLicencenum(e.getLicencenum());
+               r.setResultmodNames(e.getResultmodNames());
                return r;
             }).collect(Collectors.toList());
             resultsByGender.put(k, results);
