@@ -145,6 +145,7 @@ public class EntryFacadeREST extends AbstractFacade<Entry> {
             entry.setFinishtime(new Date());
             entry.setRacetime(resultData.getRacetime());
             entry.applyResultmods(resultData, parameters.getResultmods());
+            entry.applyRaceadjustments(parameters.getRaceadjustmentsToRace(raceid));
             entry.setStatus("FINISHED");
             em.merge(entry);
         }

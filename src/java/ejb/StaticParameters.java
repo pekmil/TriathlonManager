@@ -8,15 +8,18 @@ package ejb;
 import entity.Agegroup;
 import entity.Category;
 import entity.Club;
+import entity.Raceadjustment;
 import entity.Resultmod;
 import entity.StaticParameter;
 import entity.service.AgegroupFacadeREST;
 import entity.service.CategoryFacadeREST;
 import entity.service.ClubFacadeREST;
+import entity.service.RaceadjustmentFacadeREST;
 import entity.service.ResultmodFacadeREST;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
 import javax.ejb.ConcurrencyManagement;
 import javax.ejb.ConcurrencyManagementType;
@@ -40,6 +43,7 @@ public class StaticParameters {
     private Map<String, Agegroup> agegroups;
     private Map<String, Club> clubs;
     private Map<String, Resultmod> resultmods;
+    private Map<Integer, List<Raceadjustment>> raceadjustments;
     
     @EJB
     private CategoryFacadeREST categoryFacade;
@@ -49,6 +53,8 @@ public class StaticParameters {
     private ClubFacadeREST clubFacade;
     @EJB
     private ResultmodFacadeREST resultmodFacade;
+    @EJB
+    private RaceadjustmentFacadeREST raceadjustmentFacade;
     
     @PostConstruct
     public void init(){
@@ -59,7 +65,8 @@ public class StaticParameters {
         clubs = new HashMap<>();
         populateMap(clubs, clubFacade.findAll());   
         resultmods = new HashMap<>();
-        populateMap(resultmods, resultmodFacade.findAll());   
+        populateMap(resultmods, resultmodFacade.findAll());
+        raceadjustments = initRaceadjustments();
     }
     
     
@@ -119,6 +126,19 @@ public class StaticParameters {
 
     public Map<String, Resultmod> getResultmods() {
         return resultmods;
+    }
+    
+    private Map<Integer, List<Raceadjustment>> initRaceadjustments(){
+        List<Raceadjustment> ras = raceadjustmentFacade.findAll();
+        return ras.stream().collect(Collectors.groupingBy(ra -> ra.getKey().getRaceId()));
+    }
+    
+    public List<Raceadjustment> getRaceadjustmentsToRace(int raceId){
+        return raceadjustments.get(raceId);
+    }
+    
+    public void reloadRaceadjustments(){
+        this.raceadjustments = initRaceadjustments();
     }
     
     private <T extends StaticParameter> void populateMap(Map<String, T> map, List<T> elements){

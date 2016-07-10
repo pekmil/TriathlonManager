@@ -5,11 +5,14 @@
  */
 package entity.service;
 
+import ejb.StaticParameters;
 import entity.Race;
+import entity.Raceadjustment;
+import entity.RaceadjustmentPK;
 import java.util.List;
+import javax.ejb.EJB;
 import javax.ejb.Stateless;
-import javax.json.Json;
-import javax.json.JsonObject;
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.ws.rs.Consumes;
@@ -20,7 +23,6 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.core.Response;
 
 /**
  *
@@ -31,6 +33,12 @@ import javax.ws.rs.core.Response;
 public class RaceFacadeREST extends AbstractFacade<Race> {
     @PersistenceContext(unitName = "TriathlonManagerPU")
     private EntityManager em;
+    
+    @Inject
+    RaceadjustmentFacadeREST raceadjustmentFacade;
+    
+    @EJB
+    StaticParameters parameters;
 
     public RaceFacadeREST() {
         super(Race.class);
@@ -41,19 +49,6 @@ public class RaceFacadeREST extends AbstractFacade<Race> {
     @Consumes({"application/json"})
     public void create(Race entity) {
         super.create(entity);
-    }
-    
-    @POST
-    @Consumes({"application/json"})
-    @Produces({"application/json"})
-    @Path("create")
-    public Response create_(Race entity) {
-        super.create(entity);
-        JsonObject model = Json.createObjectBuilder()
-            .add("firstName", "Duke")
-            .add("lastName", "Java")
-        .build();
-        return Response.ok(model).build();
     }
 
     @PUT
@@ -67,6 +62,34 @@ public class RaceFacadeREST extends AbstractFacade<Race> {
     @Path("{id}")
     public void remove(@PathParam("id") Integer id) {
         super.remove(super.find(id));
+    }
+    
+    @DELETE
+    @Path("{raceid}/{categoryid}/{resultmodid}")
+    public void removeAdjustment(@PathParam("raceid") Integer raceId, 
+                                 @PathParam("categoryid") Integer categoryId,
+                                 @PathParam("resultmodid") Integer resultmodId) {
+        Race r = super.find(raceId);
+        Raceadjustment ra = raceadjustmentFacade.find(
+                        new RaceadjustmentPK(raceId, resultmodId, categoryId));
+        r.getRaceadjustments().remove(ra);
+        raceadjustmentFacade.remove(ra);
+        parameters.reloadRaceadjustments();
+    }
+    
+    @POST
+    @Path("adjustment")
+    @Consumes({"application/json"})
+    public void createAdjustment(Raceadjustment entity) {
+        Race r = super.find(entity.getKey().getRaceId());
+        raceadjustmentFacade.create(entity);
+        em.flush();
+        Raceadjustment ra = raceadjustmentFacade.find(
+                        new RaceadjustmentPK(entity.getKey().getRaceId(),
+                                             entity.getKey().getResultmodId(),
+                                             entity.getKey().getCategoryId()));
+        r.getRaceadjustments().add(ra);
+        parameters.reloadRaceadjustments();
     }
 
     @GET

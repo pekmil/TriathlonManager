@@ -42,7 +42,7 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Race.findByDesc", query = "SELECT r FROM Race r WHERE r.desc = :desc"),
     @NamedQuery(name = "Race.findByStartdate", query = "SELECT r FROM Race r WHERE r.startdate = :startdate"),
     @NamedQuery(name = "Race.findByEnddate", query = "SELECT r FROM Race r WHERE r.enddate = :enddate")})
-public class Race implements Serializable {
+public class Race implements Serializable {    
    
     private static final long serialVersionUID = 1L;
     @Id
@@ -75,6 +75,8 @@ public class Race implements Serializable {
     @JoinColumn(name = "tournament_id", referencedColumnName = "t_id")
     @ManyToOne
     private Tournament tournament;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "race")
+    private Collection<Raceadjustment> raceadjustments;
 
     public Race() {
     }
@@ -178,6 +180,15 @@ public class Race implements Serializable {
 
     public void setNational(Boolean national) {
         this.national = national;
+    }
+
+    //@XmlTransient
+    public Collection<Raceadjustment> getRaceadjustments() {
+        return raceadjustments;
+    }
+
+    public void setRaceadjustments(Collection<Raceadjustment> raceadjustments) {
+        this.raceadjustments = raceadjustments;
     }
     
 }

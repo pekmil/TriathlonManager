@@ -39,6 +39,7 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Category.findByName", query = "SELECT c FROM Category c WHERE c.name = :name")})
 @JsonIdentityInfo(generator=ObjectIdGenerators.PropertyGenerator.class, property="id")
 public class Category extends StaticParameter implements Serializable  {
+    
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -52,6 +53,8 @@ public class Category extends StaticParameter implements Serializable  {
     private String name;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "category")
     private Collection<Entry> entries;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "category")
+    private Collection<Raceadjustment> raceadjustments;
 
     public Category() {
     }
@@ -119,6 +122,15 @@ public class Category extends StaticParameter implements Serializable  {
     @Override
     public String getParameterName() {
         return name;
+    }
+
+    @XmlTransient
+    public Collection<Raceadjustment> getRaceadjustments() {
+        return raceadjustments;
+    }
+
+    public void setRaceadjustments(Collection<Raceadjustment> raceadjustments) {
+        this.raceadjustments = raceadjustments;
     }
     
 }

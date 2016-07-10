@@ -320,6 +320,16 @@ public class Entry implements Serializable {
         this.setRacetimemods(sb.toString());
     }
     
+    public void applyRaceadjustments(List<Raceadjustment> raceadjustments){
+        for(Raceadjustment ra :  raceadjustments){
+            if(ra.getGender().equals(this.getContestant().getGender()) &&
+                ra.getKey().getCategoryId() == this.getCategory().getId()){
+                    Resultmod rm = ra.getResultmod();
+                    adjustRacetime(rm.getTime(), rm.isPlus(), false);
+            }
+        }
+    }
+    
     @Transient
     public void applyResultmods(ResultData data, Map<String, Resultmod> resultmods){
         if(data.getResultmodIds() != null){
