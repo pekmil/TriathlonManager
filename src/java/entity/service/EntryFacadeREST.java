@@ -7,10 +7,14 @@ package entity.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import document.DocumentFactory;
+import document.ResultExcelDocument;
+import document.StartlistExcelDocument;
 import ejb.StaticParameters;
 import entity.Contestant;
 import entity.Entry;
 import entity.EntryPK;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -24,7 +28,11 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.Properties;
+import java.util.stream.Collectors;
+import javax.ejb.Asynchronous;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
@@ -42,7 +50,8 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
+import javax.ws.rs.container.AsyncResponse;
+import javax.ws.rs.container.Suspended;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.PathSegment;
 import javax.ws.rs.core.Response;
@@ -50,9 +59,10 @@ import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVRecord;
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 import org.glassfish.jersey.media.multipart.FormDataParam;
-import producer.ResultEvaluatorFactory;
 import resultevaluator.ResultEvaluator;
+import resultevaluator.ResultEvaluatorFactory;
 import resultevaluator.ResultParams;
+import resultevaluator.ResultType;
 import util.FileUtils;
 import util.JsonBuilder;
 import util.Utils;
@@ -78,6 +88,8 @@ public class EntryFacadeREST extends AbstractFacade<Entry> {
     FileUtils fileUtils;
     @Inject
     Properties appParameters;
+    @Inject
+    DocumentFactory documentFactory;
     
     @EJB
     StaticParameters parameters;
@@ -87,8 +99,6 @@ public class EntryFacadeREST extends AbstractFacade<Entry> {
     ContestantFacadeREST contestantFacade;
     @EJB
     LicenceFacadeREST licenceFacade;
-    
-    private final ResultParams resultParams = new ResultParams();
     
     private static final String[] CSV_HEADERS = new String[]{"name", "racenum", 
                                                              "gender", "birthyear", 
@@ -212,38 +222,136 @@ public class EntryFacadeREST extends AbstractFacade<Entry> {
         return entries;
     }
     
-    @GET
+    @POST
     @Path("raceresults/{raceid}/{categoryid}")
+    @Consumes({"application/json"})
     @Produces({"application/json"})
     public Response getRaceResultsForCategory(@PathParam("raceid") Integer raceid, 
                                               @PathParam("categoryid") Integer categoryid,
-                                              @QueryParam("national") Integer national,
-                                              @QueryParam("absolute") Integer absolute,
-                                              @QueryParam("team") Integer team,
-                                              @QueryParam("family") Integer family) throws JsonProcessingException {
+                                              ResultParams params) throws JsonProcessingException {
+        Object results = getResults(raceid, categoryid, params);
+        String json = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(results);
+        return Response.ok(json).build();
+    }
+    
+    @GET
+    @Path("getdocument/{filename}")
+    @Produces("application/vnd.ms-excel")
+    public Response getFile(@PathParam("filename") String filename){
+        if(filename.matches("(eredmenylista_|rajtlista_).*\\.xlsx")){
+            return Response.ok(new File(appParameters.getProperty("documentFolder") + filename))
+                           .header("Content-Disposition",
+                                   "attachment; filename=" + filename)
+                           .build();
+        }
+        else{
+            return Response.status(Response.Status.FORBIDDEN).build();
+        }
+        
+    }
+    
+    @POST
+    @Path("resultlist/{raceid}/{categoryid}")
+    @Produces({"application/json"})
+    @Asynchronous
+    public void generateResultlist(@Suspended final AsyncResponse asyncResponse,
+                                       @PathParam("raceid") Integer raceid, 
+                                       @PathParam("categoryid") Integer categoryid,
+                                       ResultParams params){
+        Object results = getResults(raceid, categoryid, params);
+        ResultExcelDocument doc = documentFactory.createResultlist(params.getResultType());
+        String categoryName = "";
+        if(params.getResultType() != ResultType.FAMILY){
+            categoryName = parameters.getCategories().values().stream()
+                .filter(c -> Objects.equals(c.getId(), categoryid))
+                .collect(Collectors.toList())
+                .get(0).getName();
+        }
+        doc.withCategoryName(categoryName).withResults(results);
+        if(doc.generate()){
+            HashMap<String, Object> msgParams = new HashMap<>();
+            msgParams.put("filename", doc.getFileName());
+            JsonObject jsonMsg = JsonBuilder.getJsonMsg("Eredménylista előállítása sikeres!",
+                    JsonBuilder.MsgType.ERROR, msgParams);
+            asyncResponse.resume(Response.ok(jsonMsg).build());
+        }
+        else{
+            JsonObject jsonMsg = JsonBuilder.getJsonMsg("Dokumentum generálási hiba!",
+                    JsonBuilder.MsgType.ERROR, null);
+            asyncResponse.resume(Response.ok(jsonMsg).status(Response.Status.INTERNAL_SERVER_ERROR).build());
+        }
+    }
+    
+    private Object getResults(Integer raceid, Integer categoryid, ResultParams params){
         String queryString = "SELECT e FROM Entry e " +
                        "WHERE e.key.raceId = :raceid " + 
-                           "AND e.status = 'FINISHED' " +
-                           "AND e.racetime IS NOT NULL";
-        
-        if(family != 1){
+                           "AND e.status IN :statuses";
+        List<String> statuses = new ArrayList<>();
+        statuses.add("FINISHED");
+        if(params.getResultType() == ResultType.GROUPED){
+            statuses.add("NOTPRESENT");
+            statuses.add("DSQ");
+            statuses.add("DNF");
+            statuses.add("NOTSTARTED");
+        }
+        else{
+            queryString = queryString + " AND e.racetime IS NOT NULL";
+        }
+        if(!params.isFamily()){
             queryString = queryString + " AND e.category.id = :categoryid";
         }
-        if(national == 1){
+        if(params.isNational()){
             queryString = queryString + " AND e.licencenum IS NOT NULL AND e.licencenum != ''";
         }
-        if(team == 1){
+        if(params.isTeam()){
             queryString = queryString + " AND e.contestant.club IS NOT NULL";
         }
         Query query = em.createQuery(queryString).setParameter("raceid", raceid);
-        if(family != 1) query.setParameter("categoryid", categoryid);
+        if(!params.isFamily()) query.setParameter("categoryid", categoryid);
+        query.setParameter("statuses", statuses);
         List<Entry> entries = (List)query.getResultList();
-        resultParams.setAbsolute(absolute == 1);
-        resultParams.setFamily(family == 1);
-        resultParams.setTeam(team == 1);
-        ResultEvaluator results = resultEvaluatorFactory.getResultEvaluator(resultParams.getResultType());
-        String json = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(results.getResults(entries, parameters.getAgegroups()));
-        return Response.ok(json).build();
+        ResultEvaluator results = resultEvaluatorFactory.getResultEvaluator(params.getResultType());
+        return results.getResults(entries, parameters.getAgegroups());
+    }
+    
+    @GET
+    @Path("startlist/{raceid}/{categoryid}")
+    @Produces("application/json")
+    @Asynchronous
+    public void generateStartlist(@Suspended final AsyncResponse asyncResponse,
+                                      @PathParam("raceid") Integer raceid, 
+                                      @PathParam("categoryid") Integer categoryid){
+        List<Entry> entries = (List)em.createQuery("SELECT e "
+                                                 + "FROM Entry e "
+                                                 + "WHERE e.key.raceId = :raceid AND "
+                                                       + "e.status = 'CHECKED' AND "
+                                                       + "e.category.id = :categoryid")
+        .setParameter("raceid", raceid)
+        .setParameter("categoryid", categoryid)
+        .getResultList();
+        Map<String, List<Entry>> entriesByGender = entries.stream().
+                sorted((e1, e2) -> e1.getKey().getRacenum() - e2.getKey().getRacenum()).
+                collect(Collectors.groupingBy(e -> e.getContestant().getGender()));
+        if(!entries.isEmpty()){
+            String categoryName = entries.get(0).getCategoryName();
+            StartlistExcelDocument startDoc = documentFactory.createStartlist();
+            startDoc.withCategoryName(categoryName).withEntries(entriesByGender);
+            if(startDoc.generate()){
+                HashMap<String, Object> msgParams = new HashMap<>();
+                msgParams.put("filename", startDoc.getFileName());
+                JsonObject jsonMsg = JsonBuilder.getJsonMsg("Dokumentum előállítása sikeres!",
+                        JsonBuilder.MsgType.SUCCESS, msgParams);
+                asyncResponse.resume(Response.ok(jsonMsg).build());
+            }
+            else{
+                JsonObject jsonMsg = JsonBuilder.getJsonMsg("Dokumentum generálási hiba!",
+                        JsonBuilder.MsgType.ERROR, null);
+                asyncResponse.resume(Response.ok(jsonMsg).status(Response.Status.INTERNAL_SERVER_ERROR).build());
+            }
+        }
+        JsonObject jsonMsg = JsonBuilder.getJsonMsg("Nincsenek nevezések!",
+                        JsonBuilder.MsgType.ERROR, null);
+        asyncResponse.resume(Response.ok(jsonMsg).build());
     }
     
     @POST

@@ -14,6 +14,7 @@ public class ResultParams {
     private boolean absolute;
     private boolean team;
     private boolean family;
+    private boolean national;
 
     public ResultParams() {
     }
@@ -35,6 +36,26 @@ public class ResultParams {
 
     public void setFamily(boolean family) {
         this.family = family;
+    }
+
+    public boolean isAbsolute() {
+        return absolute;
+    }
+
+    public boolean isTeam() {
+        return team;
+    }
+
+    public boolean isFamily() {
+        return family;
+    }
+
+    public boolean isNational() {
+        return national;
+    }
+
+    public void setNational(boolean national) {
+        this.national = national;
     }
     
 }

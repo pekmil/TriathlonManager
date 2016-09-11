@@ -25,7 +25,7 @@ public class GroupedResults {
     public GroupedResults(List<Entry> entries, Map<String, Agegroup> agegroups) {
         this.groupedResults = new TreeMap<>((ag1, ag2) -> ag1.getDisplayorder().compareTo(ag2.getDisplayorder()));
         Map<String, List<Entry>> entriesByAgegroup = entries.stream().
-                sorted((e1, e2) -> e1.getRacetime().compareTo(e2.getRacetime())).
+                sorted((e1, e2) -> e1.compareTo(e2)).
                 collect(Collectors.groupingBy(Entry::getAgegroupName));
         entriesByAgegroup.keySet().stream().forEach((agegroup) -> {
             Map<String, List<Entry>> entriesByGender = entriesByAgegroup.get(agegroup).stream().
@@ -35,11 +35,15 @@ public class GroupedResults {
                 List<Result> results = entriesByGender.get(k).stream().map(e -> {
                    Result r = new Result();
                    r.setName(e.getContestant().getName());
+                   r.setBirthYear(e.getContestant().getBirthyear());
+                   r.setFromTown(e.getContestant().getFromtown());
                    r.setRacenum(e.getKey().getRacenum());
                    r.setClub(e.getContestant().getClub() != null ? e.getContestant().getClub().getName() : "-");
-                   r.setRacetime(Utils.simpleTimeFormat.format(e.getRacetime()));
+                   r.setRacetime(e.getRacetime() != null ? Utils.simpleTimeFormat.format(e.getRacetime()) : "-");
                    r.setLicencenum(e.getLicencenum());
                    r.setResultmodNames(e.getResultmodNames());
+                   r.setStatusString(e.getStatusString());
+                   r.setStatus(e.getStatus());
                    return r;
                 }).collect(Collectors.toList());
                 resultsByGender.put(k, results);

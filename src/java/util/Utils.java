@@ -64,6 +64,10 @@ public class Utils {
         return simpleDateTimeFormat.format(date);
     }
     
+    public static String formatDate(Date date){
+        return simpleDateFormat.format(date);
+    }
+    
     public static String formatTime(Date date){
         return simpleTimeFormat.format(date);
     }

@@ -16,10 +16,14 @@ import java.util.List;
 public class Result {
         
     private String name;
+    private int birthYear;
+    private String fromTown;
     private int racenum;
     private String club;
     private String licencenum;
     private String racetime;
+    private String statusString;
+    private String status;
     private Date rt;
     private List<String> resultmodNames;
 
@@ -33,6 +37,22 @@ public class Result {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public int getBirthYear() {
+        return birthYear;
+    }
+
+    public void setBirthYear(int birthYear) {
+        this.birthYear = birthYear;
+    }
+
+    public String getFromTown() {
+        return fromTown;
+    }
+
+    public void setFromTown(String fromTown) {
+        this.fromTown = fromTown;
     }
 
     public int getRacenum() {
@@ -82,6 +102,22 @@ public class Result {
 
     public void setResultmodNames(List<String> resultmodNames) {
         this.resultmodNames = resultmodNames;
+    }
+
+    public String getStatusString() {
+        return statusString;
+    }
+
+    public void setStatusString(String statusString) {
+        this.statusString = statusString;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 
 }

@@ -40,7 +40,7 @@ public class AdminEndpoint {
     static {
         EntryOption statusOption = new EntryOption("STATUS", "Nevezés státusza", "status");
         statusOption.addValue("Bejelentkezett", "CHECKED");
-        statusOption.addValue("Célba ért", "FINISHED");
+        //statusOption.addValue("Célba ért", "FINISHED");
         statusOption.addValue("Nem jött el", "NOTPRESENT");
         statusOption.addValue("Kizárt", "DSQ");
         statusOption.addValue("Nem ért célba", "DNF");
@@ -114,7 +114,8 @@ public class AdminEndpoint {
     @POST
     @Path("modifyresult/{raceid}")
     @Produces({"application/json"})
-    public Response modifyRacetime(@PathParam("raceid") Integer raceid, ResultData resultData){
+    public Response modifyRacetime(@PathParam(value = "raceid")
+    final Integer raceid, final ResultData resultData){
         return entryFacade.modifyRacetime(raceid, resultData);
     }
     

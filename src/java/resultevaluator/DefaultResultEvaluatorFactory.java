@@ -3,17 +3,11 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package producer;
+package resultevaluator;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
-import resultevaluator.AbsoluteResultEvaluator;
-import resultevaluator.FamilyResultEvaluator;
-import resultevaluator.GroupedResultEvaluator;
-import resultevaluator.ResultEvaluator;
-import resultevaluator.ResultType;
-import resultevaluator.TeamResultEvaluator;
 
 /**
  *

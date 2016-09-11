@@ -33,14 +33,17 @@ public class AbsoluteResults {
         Map<String, List<Result>> resultsByGender = new HashMap<>();
         entriesByGender.keySet().stream().forEach(k -> {
             List<Result> results = entriesByGender.get(k).stream().map(e -> {
-               Result r = new Result();
-               r.setName(e.getContestant().getName());
-               r.setRacenum(e.getKey().getRacenum());
-               r.setClub(e.getContestant().getClub() != null ? e.getContestant().getClub().getName() : "-");
-               r.setRacetime(simpleTimeFormat.format(e.getRacetime()));
-               r.setLicencenum(e.getLicencenum());
-               r.setResultmodNames(e.getResultmodNames());
-               return r;
+                Result r = new Result();
+                r.setName(e.getContestant().getName());
+                r.setRacenum(e.getKey().getRacenum());
+                r.setClub(e.getContestant().getClub() != null ? e.getContestant().getClub().getName() : "-");
+                r.setRacetime(simpleTimeFormat.format(e.getRacetime()));
+                r.setLicencenum(e.getLicencenum());
+                r.setResultmodNames(e.getResultmodNames());
+                r.setBirthYear(e.getContestant().getBirthyear());
+                r.setStatusString(e.getStatusString());
+                r.setStatus(e.getStatus());
+                return r;
             }).collect(Collectors.toList());
             resultsByGender.put(k, results);
         });

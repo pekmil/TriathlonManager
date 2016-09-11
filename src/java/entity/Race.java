@@ -5,6 +5,7 @@
  */
 package entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Date;
@@ -183,6 +184,7 @@ public class Race implements Serializable {
     }
 
     //@XmlTransient
+    @JsonIgnore
     public Collection<Raceadjustment> getRaceadjustments() {
         return raceadjustments;
     }

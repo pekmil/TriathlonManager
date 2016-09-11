@@ -5,6 +5,7 @@
  */
 package entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.io.Serializable;
 import javax.persistence.Basic;
 import javax.persistence.Column;
@@ -77,6 +78,7 @@ public class Raceadjustment implements Serializable {
     }
 
     @XmlTransient
+    @JsonIgnore
     public Race getRace() {
         return race;
     }
@@ -86,6 +88,7 @@ public class Raceadjustment implements Serializable {
     }
 
     //@XmlTransient
+    @JsonIgnore
     public Resultmod getResultmod() {
         return resultmod;
     }
@@ -95,6 +98,7 @@ public class Raceadjustment implements Serializable {
     }
     
     //@XmlTransient
+    @JsonIgnore
     public Category getCategory() {
         return category;
     }

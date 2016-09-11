@@ -37,6 +37,7 @@ public class NotificationEndpoint {
     @OnOpen
     public void openConnection(Session session) throws IOException{ 
         queue.add(session);
+        session.getBasicRemote().sendText("Szerver kapcsolat létrejött!");
     }
     
     @OnClose

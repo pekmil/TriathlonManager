@@ -44,7 +44,7 @@ import viewmodel.ResultData;
     @NamedQuery(name = "Entry.findByStatus", query = "SELECT e FROM Entry e WHERE e.status = :status"),
     @NamedQuery(name = "Entry.findByLicencenum", query = "SELECT e FROM Entry e WHERE e.licencenum = :licencenum")})
 @JsonIdentityInfo(generator=ObjectIdGenerators.PropertyGenerator.class, property="key")
-public class Entry implements Serializable {    
+public class Entry implements Serializable, Comparable<Entry> {    
     
     private static final long serialVersionUID = 1L;
     @EmbeddedId
@@ -158,6 +158,27 @@ public class Entry implements Serializable {
 
     public String getStatus() {
         return status;
+    }
+    
+    public String getStatusString(){
+        switch(this.status){
+            case "CHECKED":
+	        return "Bejelentkezett";
+	    case "FINISHED":
+	        return "Célba ért";
+            case "NOTPRESENT":
+                return "Nem jött el";
+            case "DSQ":
+                return "Kizárt";
+            case "DNF":
+                return "Feladta"; 
+            case "PRE":
+                return "Előnevezett";
+            case "NOTSTARTED":
+                return "Nem indult";
+	    default:
+	        return "N/A";
+        }
     }
 
     public void setStatus(String status) {
@@ -335,10 +356,10 @@ public class Entry implements Serializable {
         if(data.getResultmodIds() != null){
             for(String id : data.getResultmodIds()){
                 Resultmod rm = resultmods.get(id);
-                if(!data.isRollback() && this.resultmods.contains(rm.getIdname())){
+                if(!data.isRollback() && this.resultmods != null && this.resultmods.contains(rm.getIdname())){
                     throw new IllegalArgumentException("Már alkalmazott eredmény módosító tétel ismételt hozzáadásának kísérlete!");
                 }
-                else if(data.isRollback() && !this.resultmods.contains(rm.getIdname())){
+                else if(data.isRollback() && (this.resultmods == null || !this.resultmods.contains(rm.getIdname()))){
                     throw new IllegalArgumentException("Még nem alkalmazott eredmény módosító tétel törlésének kísérlete!");
                 }
                 adjustRacetime(rm.getTime(), rm.isPlus(), data.isRollback());
@@ -389,6 +410,7 @@ public class Entry implements Serializable {
     }
     
     @Transient
+    @JsonIgnore
     public List<String> getResultmodList(){
         if(this.resultmods == null) return null;
         else{
@@ -403,6 +425,7 @@ public class Entry implements Serializable {
     public void setResultmodList(List<String> rml){}
     
     @Transient
+    @JsonIgnore
     public List<String> getResultmodNames(){
         if(this.resultmods == null) return null;
         else{
@@ -416,5 +439,21 @@ public class Entry implements Serializable {
     }
     
     public void setResultmodNames(List<String> rml){}
+
+    @Override
+    public int compareTo(Entry e) {
+        if(this.racetime != null && e.racetime != null){
+            return this.getRacetime().compareTo(e.getRacetime());
+        }
+        else if(this.racetime == null && e.racetime != null){
+            return 1;
+        }
+        else if(this.racetime != null && e.racetime == null){
+            return -1;
+        }
+        else{
+            return 0;
+        }
+    }
     
 }
