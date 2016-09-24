@@ -120,7 +120,7 @@ public class Entry implements Serializable, Comparable<Entry> {
         this.status = status;
     }
 
-    public Entry(int raceId, short racenum) {
+    public Entry(int raceId, String racenum) {
         this.key = new EntryPK(raceId, racenum);
     }
 
@@ -342,11 +342,13 @@ public class Entry implements Serializable, Comparable<Entry> {
     }
     
     public void applyRaceadjustments(List<Raceadjustment> raceadjustments){
-        for(Raceadjustment ra :  raceadjustments){
-            if(ra.getGender().equals(this.getContestant().getGender()) &&
-                ra.getKey().getCategoryId() == this.getCategory().getId()){
-                    Resultmod rm = ra.getResultmod();
-                    adjustRacetime(rm.getTime(), rm.isPlus(), false);
+        if(raceadjustments != null){
+            for(Raceadjustment ra : raceadjustments){
+                if(ra.getGender().equals(this.getContestant().getGender()) &&
+                    ra.getKey().getCategoryId() == this.getCategory().getId()){
+                        Resultmod rm = ra.getResultmod();
+                        adjustRacetime(rm.getTime(), rm.isPlus(), false);
+                }
             }
         }
     }
@@ -385,7 +387,8 @@ public class Entry implements Serializable, Comparable<Entry> {
         if(rollback){
             int start = this.resultmods.indexOf(rm.getIdname());
             int end = this.resultmods.indexOf("|", start) + 1;
-            this.setResultmods(this.resultmods.replace(this.resultmods.subSequence(start, end), ""));
+            String replacement = this.resultmods.replace(this.resultmods.subSequence(start, end), "");
+            this.setResultmods(replacement.equals("") ? null : replacement);
         }
         else{
             StringBuilder sb = new StringBuilder(rm.getIdname());

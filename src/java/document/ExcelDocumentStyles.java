@@ -21,7 +21,7 @@ public final class ExcelDocumentStyles {
     
     private static final XSSFColor borderColor = new XSSFColor(new java.awt.Color(155, 194, 230));
     private static final XSSFColor headerLevel1FgColor = new XSSFColor(new java.awt.Color(47, 117, 181));
-    private static final XSSFColor headerLevel1FtColor = new XSSFColor(new java.awt.Color(34, 43, 53));
+    private static final XSSFColor headerLevel1FtColor = new XSSFColor(new java.awt.Color(255, 255, 255));
     private static final XSSFColor headerLevel2FgColor = borderColor;
     private static final XSSFColor headerLevel2FtColor = new XSSFColor(new java.awt.Color(31, 78, 120));
     private static final XSSFColor headerLevel3FgColor = new XSSFColor(new java.awt.Color(214, 220, 228));

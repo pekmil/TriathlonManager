@@ -31,6 +31,7 @@ import javax.xml.bind.annotation.XmlTransient;
 @XmlRootElement
 @JsonIdentityInfo(generator=ObjectIdGenerators.PropertyGenerator.class, property="id")
 public class Invoice implements Serializable {
+    
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -47,6 +48,11 @@ public class Invoice implements Serializable {
     @Size(min = 1, max = 250)
     @Column(name = "i_customeraddress")
     private String customeraddress;
+    @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 8)
+    @Column(name = "i_paymentmethod")
+    private String paymentmethod;
     @OneToMany(mappedBy = "invoice")
     private Collection<Entry> entries;
 
@@ -86,6 +92,14 @@ public class Invoice implements Serializable {
     public void setCustomeraddress(String customeraddress) {
         this.customeraddress = customeraddress;
     }
+    
+    public String getPaymentmethod() {
+        return paymentmethod;
+    }
+
+    public void setPaymentmethod(String paymentmethod) {
+        this.paymentmethod = paymentmethod;
+    }
 
     @XmlTransient
     public Collection<Entry> getEntries() {
@@ -119,6 +133,6 @@ public class Invoice implements Serializable {
     @Override
     public String toString() {
         return "entity.Invoice[ id=" + id + " ]";
-    }
+    }   
     
 }

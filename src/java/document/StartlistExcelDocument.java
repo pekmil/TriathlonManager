@@ -57,14 +57,15 @@ public class StartlistExcelDocument extends ExcelDocument {
             for(Entry entry : data.get(gender)){
                 addEntryRow(addRow(sheet, rowIdx++), entry);
             }
+            addSumRow(addRow(sheet, rowIdx++), data.get(gender).size());
             rowIdx++;
         }
-        autoSizeColumns(sheet, 5);
+        autoSizeColumns(sheet, columnNames.length);
     }
     
     private void addEntryRow(Row row, Entry entry){
         int cellIdx = 0;
-        addCell(row, cellIdx++, new Short(entry.getKey().getRacenum()).doubleValue())
+        addCell(row, cellIdx++, entry.getKey().getRacenum())
                 .setCellStyle(styles.getBordered());
         addCell(row, cellIdx++, entry.getContestant().getName())
                 .setCellStyle(styles.getBordered());
@@ -74,6 +75,11 @@ public class StartlistExcelDocument extends ExcelDocument {
                 .setCellStyle(styles.getBordered());
         addCell(row, cellIdx++, entry.getContestant().getClub() == null ?
                                 "-" : entry.getContestant().getClub().getName())
+                .setCellStyle(styles.getBordered());
+    }
+    
+    private void addSumRow(Row row, int count){
+        addCell(row, columnNames.length - 1, "Összesen: " + count + " fő")
                 .setCellStyle(styles.getBordered());
     }
     

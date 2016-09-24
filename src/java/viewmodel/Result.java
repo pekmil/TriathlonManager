@@ -18,12 +18,13 @@ public class Result {
     private String name;
     private int birthYear;
     private String fromTown;
-    private int racenum;
+    private String racenum;
     private String club;
     private String licencenum;
     private String racetime;
     private String statusString;
     private String status;
+    private String agegroupName;
     private Date rt;
     private List<String> resultmodNames;
 
@@ -55,11 +56,11 @@ public class Result {
         this.fromTown = fromTown;
     }
 
-    public int getRacenum() {
+    public String getRacenum() {
         return racenum;
     }
 
-    public void setRacenum(int racenum) {
+    public void setRacenum(String racenum) {
         this.racenum = racenum;
     }
 
@@ -118,6 +119,14 @@ public class Result {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public String getAgegroupName() {
+        return agegroupName;
+    }
+
+    public void setAgegroupName(String agegroupName) {
+        this.agegroupName = agegroupName;
     }
 
 }

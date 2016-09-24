@@ -43,6 +43,7 @@ public class AbsoluteResults {
                 r.setBirthYear(e.getContestant().getBirthyear());
                 r.setStatusString(e.getStatusString());
                 r.setStatus(e.getStatus());
+                r.setAgegroupName(e.getAgegroupName());
                 return r;
             }).collect(Collectors.toList());
             resultsByGender.put(k, results);

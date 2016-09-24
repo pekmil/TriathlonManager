@@ -15,7 +15,7 @@ import java.util.List;
  */
 public class ResultData {
     
-    private short racenum;
+    private String racenum;
     private Date racetime;
     
     private String racetimemoddesc;
@@ -27,11 +27,11 @@ public class ResultData {
         this.resultmodIds = new ArrayList<>();
     }
 
-    public short getRacenum() {
+    public String getRacenum() {
         return racenum;
     }
 
-    public void setRacenum(short racenum) {
+    public void setRacenum(String racenum) {
         this.racenum = racenum;
     }
 

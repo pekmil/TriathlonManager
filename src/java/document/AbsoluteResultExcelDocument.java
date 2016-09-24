@@ -18,9 +18,9 @@ import viewmodel.Result;
  */
 public class AbsoluteResultExcelDocument extends ResultExcelDocument {
     
-    private final String[] columnNames = {"Név", "Rajtszám", "Születési év",
-                                          "Település", "Klub", "Licensz", "Idő",
-                                          "Megjegyzés"};
+    private final String[] columnNames = {"#", "Név", "Rajtszám", "Születési év",
+                                          "Település", "Klub", "Licensz", "Korcsoport",
+                                          "Idő", "Megjegyzés"};
 
     public AbsoluteResultExcelDocument(String serverSaveFolder) {
         super(serverSaveFolder);
@@ -41,7 +41,7 @@ public class AbsoluteResultExcelDocument extends ResultExcelDocument {
             AgegroupResult result = data.getAbsoluteResults();
             if(result.getFemaleResults() != null && !result.getFemaleResults().isEmpty()){
                 addCell(addRow(sheet, rowIdx), 0, "Nő").setCellStyle(styles.getHeaderLevel3());
-                mergeCellsInRow(sheet, rowIdx, 0, 8);
+                mergeCellsInRow(sheet, rowIdx, 0, columnNames.length);
                 rowIdx++;
                 int pos = 0;
                 for(Result r : result.getFemaleResults()){
@@ -51,7 +51,7 @@ public class AbsoluteResultExcelDocument extends ResultExcelDocument {
             }            
             if(result.getMaleResults() != null && !result.getMaleResults().isEmpty()){
                 addCell(addRow(sheet, rowIdx), 0, "Férfi").setCellStyle(styles.getHeaderLevel3());
-                mergeCellsInRow(sheet, rowIdx, 0, 8);
+                mergeCellsInRow(sheet, rowIdx, 0, columnNames.length);
                 rowIdx++;
                 int pos = 0;
                 for(Result r : result.getMaleResults()){
@@ -68,12 +68,14 @@ public class AbsoluteResultExcelDocument extends ResultExcelDocument {
     
     private void addResultRow(Row row, Result result, int pos){
         int cellIdx = 0;
+        applyMedalistCellStyle(addCell(row, cellIdx++, (pos + 1) + "."), pos, false, result);
         applyMedalistCellStyle(addCell(row, cellIdx++, result.getName()), pos, false, result);
-        applyMedalistCellStyle(addCell(row, cellIdx++, new Integer(result.getRacenum()).doubleValue()), pos, false, result);
+        applyMedalistCellStyle(addCell(row, cellIdx++, result.getRacenum()), pos, false, result);
         applyMedalistCellStyle(addCell(row, cellIdx++, result.getBirthYear()), pos, false, result);
         applyMedalistCellStyle(addCell(row, cellIdx++, result.getFromTown()), pos, false, result);
         applyMedalistCellStyle(addCell(row, cellIdx++, result.getClub()), pos, false, result);
         applyMedalistCellStyle(addCell(row, cellIdx++, result.getLicencenum()), pos, false, result);
+        applyMedalistCellStyle(addCell(row, cellIdx++, result.getAgegroupName()), pos, false, result);
         applyMedalistCellStyle(addCell(row, cellIdx++, result.getRacetime()), pos, false, result);
         addResultmodCell(result.getResultmodNames(), row, cellIdx++, pos, result);
     }

@@ -86,7 +86,7 @@ public class TeamResultExcelDocument extends ResultExcelDocument {
     private void addResultRow(Row row, Result result, int pos){
         int cellIdx = 0;
         applyMedalistCellStyle(addCell(row, cellIdx++, result.getName()), pos, true, result);
-        applyMedalistCellStyle(addCell(row, cellIdx++, new Integer(result.getRacenum()).doubleValue()), pos, true, result);
+        applyMedalistCellStyle(addCell(row, cellIdx++, result.getRacenum()), pos, true, result);
         applyMedalistCellStyle(addCell(row, cellIdx++, result.getClub()), pos, true, result);
         applyMedalistCellStyle(addCell(row, cellIdx++, result.getLicencenum()), pos, true, result);
         applyMedalistCellStyle(addCell(row, cellIdx++, result.getRacetime()), pos, true, result);

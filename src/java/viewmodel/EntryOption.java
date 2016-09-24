@@ -19,21 +19,25 @@ public class EntryOption {
     private String id;
     private String displayName;
     private String dbField;
+    private boolean freeValue;
     
-    private List<ValueOption> values;
-    
+    private List<ValueOption> values;   
     private int selectedValue;
+    private String value;
+    
     private List<Integer> selectedRacenums;
+    
     private int selectedRaceId;
 
     public EntryOption() {
    
     }
 
-    public EntryOption(String id, String displayName, String dbField) {
+    public EntryOption(String id, String displayName, String dbField, boolean freeValue) {
         this.id = id;
         this.displayName = displayName;
         this.dbField = dbField;
+        this.freeValue = freeValue;
         this.values = new ArrayList<>();
         this.selectedRacenums = new ArrayList<>();
     }
@@ -94,6 +98,22 @@ public class EntryOption {
 
     public void setSelectedRaceId(int selectedRaceId) {
         this.selectedRaceId = selectedRaceId;
+    }
+
+    public boolean isFreeValue() {
+        return freeValue;
+    }
+
+    public void setFreeValue(boolean freeValue) {
+        this.freeValue = freeValue;
+    }
+
+    public String getValue() {
+        return value;
+    }
+
+    public void setValue(String value) {
+        this.value = value;
     }
     
 }

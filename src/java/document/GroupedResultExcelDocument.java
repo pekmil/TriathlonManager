@@ -74,8 +74,7 @@ public class GroupedResultExcelDocument extends ResultExcelDocument {
     private void addResultRow(Row row, Result result, int pos){
         int cellIdx = 0;
         applyMedalistCellStyle(addCell(row, cellIdx++, result.getName()), pos, false, result);
-        applyMedalistCellStyle(addCell(row, cellIdx++, 
-                new Integer(result.getRacenum()).doubleValue()), pos, false, result);
+        applyMedalistCellStyle(addCell(row, cellIdx++, result.getRacenum()), pos, false, result);
         applyMedalistCellStyle(addCell(row, cellIdx++, result.getBirthYear()), pos, false, result);
         applyMedalistCellStyle(addCell(row, cellIdx++, result.getFromTown()), pos, false, result);
         applyMedalistCellStyle(addCell(row, cellIdx++, result.getClub()), pos, false, result);

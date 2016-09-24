@@ -122,7 +122,7 @@ public class EntryFacadeREST extends AbstractFacade<Entry> {
         }
         java.util.List<String> racenum = map.get("racenum");
         if (racenum != null && !racenum.isEmpty()) {
-            key.setRacenum(new java.lang.Short(racenum.get(0)));
+            key.setRacenum(new java.lang.String(racenum.get(0)));
         }
         return key;
     }
@@ -238,7 +238,7 @@ public class EntryFacadeREST extends AbstractFacade<Entry> {
     @Path("getdocument/{filename}")
     @Produces("application/vnd.ms-excel")
     public Response getFile(@PathParam("filename") String filename){
-        if(filename.matches("(eredmenylista_|rajtlista_).*\\.xlsx")){
+        if(filename.matches("(eredmenylista_|rajtlista_|invalid_licences_).*\\.(xlsx|csv)")){
             return Response.ok(new File(appParameters.getProperty("documentFolder") + filename))
                            .header("Content-Disposition",
                                    "attachment; filename=" + filename)
@@ -330,7 +330,7 @@ public class EntryFacadeREST extends AbstractFacade<Entry> {
         .setParameter("categoryid", categoryid)
         .getResultList();
         Map<String, List<Entry>> entriesByGender = entries.stream().
-                sorted((e1, e2) -> e1.getKey().getRacenum() - e2.getKey().getRacenum()).
+                sorted((e1, e2) -> e1.getKey().getRacenum().compareTo(e2.getKey().getRacenum())).
                 collect(Collectors.groupingBy(e -> e.getContestant().getGender()));
         if(!entries.isEmpty()){
             String categoryName = entries.get(0).getCategoryName();
@@ -383,7 +383,7 @@ public class EntryFacadeREST extends AbstractFacade<Entry> {
                 ed.setPreentry(true);
                 ed.setStatus("PRE");
                 ed.setName(record.get("name"));
-                ed.setRacenum(Short.valueOf(record.get("racenum")));
+                ed.setRacenum(record.get("racenum"));
                 ed.setGender(record.get("gender"));
                 ed.setBirthYear(Short.valueOf(record.get("birthyear")));
                 ed.setCategory(record.get("category"));
@@ -401,8 +401,12 @@ public class EntryFacadeREST extends AbstractFacade<Entry> {
                 insertEntry(ed, raceid);
                 ++count;
             }
-            Files.write(Paths.get(appParameters.getProperty("uploadFolder"), "invalid_licences_" + fileName), invalidLicences, Charset.forName("UTF-8"));
-            return Response.ok(String.valueOf(count)).build();
+            String invalidLicencesFileName = "invalid_licences_" + fileName;
+            Files.write(Paths.get(appParameters.getProperty("uploadFolder"), invalidLicencesFileName), invalidLicences, Charset.forName("UTF-8"));
+            HashMap<String, Object> params = new HashMap<>();
+            params.put("invalidLicences", invalidLicencesFileName);
+            JsonObject jsonMsg = JsonBuilder.getJsonMsg(count + " db előnevezés beolvasva!", JsonBuilder.MsgType.INFO, params);
+            return Response.ok(String.valueOf(jsonMsg)).build();
         } catch (FileNotFoundException ex) {
             HashMap<String, Object> params = new HashMap<>();
             params.put("fileName", fileName);
@@ -473,7 +477,7 @@ public class EntryFacadeREST extends AbstractFacade<Entry> {
 
     @DELETE
     @Path("raceid/{raceid}/racenum/{racenum}")
-    public void remove(@PathParam("raceid") int raceid, @PathParam("racenum") short racenum) {
+    public void remove(@PathParam("raceid") int raceid, @PathParam("racenum") String racenum) {
         entity.EntryPK key = new EntryPK(raceid, racenum);
         super.remove(super.find(key));
     }
@@ -481,7 +485,7 @@ public class EntryFacadeREST extends AbstractFacade<Entry> {
     @GET
     @Path("raceid/{raceid}/racenum/{racenum}")
     @Produces({"application/json"})
-    public Entry find(@PathParam("raceid") int raceid, @PathParam("racenum") short racenum) {
+    public Entry find(@PathParam("raceid") int raceid, @PathParam("racenum") String racenum) {
         entity.EntryPK key = new EntryPK(raceid, racenum);
         return super.find(key);
     }

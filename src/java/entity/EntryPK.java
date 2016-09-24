@@ -10,6 +10,7 @@ import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 /**
  *
@@ -23,13 +24,14 @@ public class EntryPK implements Serializable {
     private int raceId;
     @Basic(optional = false)
     @NotNull
+    @Size(max = 5)
     @Column(name = "e_racenum")
-    private short racenum;
+    private String racenum;
 
     public EntryPK() {
     }
 
-    public EntryPK(int raceId, short acenum) {
+    public EntryPK(int raceId, String acenum) {
         this.raceId = raceId;
         this.racenum = acenum;
     }
@@ -42,11 +44,11 @@ public class EntryPK implements Serializable {
         this.raceId = raceId;
     }
 
-    public short getRacenum() {
+    public String getRacenum() {
         return racenum;
     }
 
-    public void setRacenum(short racenum) {
+    public void setRacenum(String racenum) {
         this.racenum = racenum;
     }
 
@@ -54,7 +56,7 @@ public class EntryPK implements Serializable {
     public int hashCode() {
         int hash = 0;
         hash += (int) raceId;
-        hash += (int) racenum;
+        hash += racenum.length();
         return hash;
     }
 
@@ -68,7 +70,7 @@ public class EntryPK implements Serializable {
         if (this.raceId != other.raceId) {
             return false;
         }
-        if (this.racenum != other.racenum) {
+        if (!this.racenum.equals(other.racenum)) {
             return false;
         }
         return true;

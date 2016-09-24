@@ -19,7 +19,7 @@ public class EntryData {
     
     private String agegroup;
     private String category;
-    private short racenum;
+    private String racenum;
     private boolean preentry;
     private String status;
     private boolean paid;
@@ -88,11 +88,11 @@ public class EntryData {
         this.category = category;
     }
 
-    public short getRacenum() {
+    public String getRacenum() {
         return racenum;
     }
 
-    public void setRacenum(short racenum) {
+    public void setRacenum(String racenum) {
         this.racenum = racenum;
     }
 

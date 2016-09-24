@@ -38,18 +38,20 @@ public class AdminEndpoint {
     private static final Map<String, EntryOption> entryOptions = new HashMap<>();
     
     static {
-        EntryOption statusOption = new EntryOption("STATUS", "Nevezés státusza", "status");
+        EntryOption statusOption = new EntryOption("STATUS", "Nevezés státusza", "status", false);
         statusOption.addValue("Bejelentkezett", "CHECKED");
         //statusOption.addValue("Célba ért", "FINISHED");
         statusOption.addValue("Nem jött el", "NOTPRESENT");
         statusOption.addValue("Kizárt", "DSQ");
         statusOption.addValue("Nem ért célba", "DNF");
         statusOption.addValue("Előnevezett", "PRE");
-        EntryOption paidOption = new EntryOption("PAID", "Nevezés fizetve?", "paid");
+        EntryOption paidOption = new EntryOption("PAID", "Nevezés fizetve?", "paid", false);
         paidOption.addValue("Fizetett", true);
         paidOption.addValue("Nem fizetett", false);
+        EntryOption racenumOption = new EntryOption("RACENUM", "Rajtszám", "key.racenum", true);
         entryOptions.put(statusOption.getId(), statusOption);
         entryOptions.put(paidOption.getId(), paidOption);
+        entryOptions.put(racenumOption.getId(), racenumOption);
     }
     
     @Inject
@@ -83,11 +85,17 @@ public class AdminEndpoint {
     @Produces({"application/json"})
     public Response modifyEntries(EntryOption option){
         EntryOption selectedOption = entryOptions.get(option.getId());
-        ValueOption selectedValue = entryOptions.get(option.getId()).getValues().get(option.getSelectedValue());
+        Object value;
+        if(selectedOption.isFreeValue()){
+            value = option.getValue();
+        }else{
+            ValueOption selectedValue = entryOptions.get(option.getId()).getValues().get(option.getSelectedValue());
+            value = selectedValue.getDbValue();
+        }
         int mod = entryFacade.modifyEntries(option.getSelectedRaceId(), 
                                             option.getSelectedRacenums(), 
                                             selectedOption.getDbField(), 
-                                            selectedValue.getDbValue());
+                                            value);
         JsonObject jsonMsg = JsonBuilder.getJsonMsg("A nevezések tömeges módosítása sikeresen megtörtént! (" + mod + " db)", JsonBuilder.MsgType.SUCCESS, null);
         return Response.ok().entity(jsonMsg).build();
     }
